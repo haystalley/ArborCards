@@ -1,0 +1,83 @@
+https://plants.sc.egov.usda.gov/plant-profile/ACRU
+
+
+<div _ngcontent-ng-c2154814257="" class="general-info">
+      <table _ngcontent-ng-c2154814257="" class="usa-table margin-top-0">
+        <caption _ngcontent-ng-c2154814257="">
+          red maple<br _ngcontent-ng-c2154814257="">General Information
+        </caption>
+        <tbody _ngcontent-ng-c2154814257="">
+          <tr _ngcontent-ng-c2154814257="">
+            <th _ngcontent-ng-c2154814257="" scope="row">
+              <h3 _ngcontent-ng-c2154814257="">Symbol</h3>
+            </th>
+            <td _ngcontent-ng-c2154814257="">
+              <span _ngcontent-ng-c2154814257="">ACRU</span>
+            </td>
+          </tr>
+          <tr _ngcontent-ng-c2154814257="">
+            <th _ngcontent-ng-c2154814257="" scope="row">
+              <h3 _ngcontent-ng-c2154814257="">Group</h3>
+            </th>
+            <td _ngcontent-ng-c2154814257="">
+              <span _ngcontent-ng-c2154814257="">Dicot</span>
+            </td>
+          </tr>
+          <tr _ngcontent-ng-c2154814257="">
+            <th _ngcontent-ng-c2154814257="" scope="row">
+              <h3 _ngcontent-ng-c2154814257="">Duration</h3>
+            </th>
+            <td _ngcontent-ng-c2154814257="">
+              
+                <span _ngcontent-ng-c2154814257="">Perennial<br _ngcontent-ng-c2154814257=""></span>
+              <!--container--></td>
+          </tr>
+          <tr _ngcontent-ng-c2154814257="">
+            <th _ngcontent-ng-c2154814257="" scope="row">
+              <h3 _ngcontent-ng-c2154814257="">Growth Habits</h3>
+            </th>
+            <td _ngcontent-ng-c2154814257="">
+              
+                <span _ngcontent-ng-c2154814257="">Tree<br _ngcontent-ng-c2154814257=""></span>
+              <!--container--></td>
+          </tr>
+          <tr _ngcontent-ng-c2154814257="">
+            <th _ngcontent-ng-c2154814257="" scope="row">
+              <h3 _ngcontent-ng-c2154814257="">Native Status</h3>
+            </th>
+            <td _ngcontent-ng-c2154814257="">
+              <!--container-->
+                <span _ngcontent-ng-c2154814257="">CAN N
+                  
+                    |
+                  <!--container--></span>
+              
+                <span _ngcontent-ng-c2154814257="">L48 N
+                  <!--container--></span>
+              <!--container--></td>
+          </tr>
+          <!--container-->
+            <!--container-->
+              <tr _ngcontent-ng-c2154814257="">
+                <th _ngcontent-ng-c2154814257="" scope="row">
+                  <h3 _ngcontent-ng-c2154814257="">Fact Sheet</h3>
+                </th>
+                <td _ngcontent-ng-c2154814257="">
+                  
+                    <span _ngcontent-ng-c2154814257=""><a _ngcontent-ng-c2154814257="" target="_blank" rel="noopener noreferrer" class="usa-link usa-link--external" href="/DocumentLibrary/factsheet/pdf/fs_acru.pdf">pdf</a></span>
+                  <!--container--></td>
+              </tr>
+            <!--container-->
+              <tr _ngcontent-ng-c2154814257="">
+                <th _ngcontent-ng-c2154814257="" scope="row">
+                  <h3 _ngcontent-ng-c2154814257="">Plant Guide</h3>
+                </th>
+                <td _ngcontent-ng-c2154814257="">
+                  
+                    <span _ngcontent-ng-c2154814257=""><a _ngcontent-ng-c2154814257="" target="_blank" rel="noopener noreferrer" class="usa-link usa-link--external" href="/DocumentLibrary/plantguide/pdf/pg_acru.pdf">pdf</a>
+                      <!--container--></span>
+                  <!--container--></td>
+              </tr>
+            <!--container--><!--container--><!--container--></tbody>
+      </table>
+    </div>
