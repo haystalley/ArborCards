@@ -1,0 +1,47 @@
+=== slippery elm ===
+Scientific Name: Ulmus rubra
+Common Name:     slippery elm
+Family:          Ulmaceae
+USDA Symbol:     ULRU
+
+--- TAGS ---
+Deciduous, Tree, Native
+
+--- USDA GENERAL DATA ---
+Symbol:       ULRU
+Group:        Dicot
+Duration:     Perennial
+Growth Habit: Tree
+Native Status:CAN (N) | L48 (N)
+
+--- DESCRIPTION ---
+Leaf: Alternate, simple, ovate to oblong, 4 to 6 inches long, 2 to 3 inches wide, margin coarsely and sharply doubly serrated, base conspicuously inequilateral; dark green above and very scabrous, paler and slightly scabrous or hairy beneath.
+Flower: Species is monoecious; small, light green, in tight clusters of 3 to 5, appearing in early spring before leaves open.
+Fruit: Round, papery samara, 3/4 to 1 inch across, margin and surface of wing smooth; surface of seed cavity pubescent, ripen in late spring.
+Twig: Often stouter than American elm, slightly zigzag, ashy gray to brownish-gray (often mottled), scabrous; false terminal bud, lateral buds dark, chestnut brown to nearly black; buds may be rusty-hairy, twigs mucilaginous when chewed.
+Bark: Dark reddish brown, does not show buff-colored patches or streaks when sectioned; bark fissures not as diamond-shaped as American elm; inner bark mucilaginous.
+Form: Medium sized tree to 80 feet, trunk usually free of branches for a greater length than American elm, branches also less drooping.
+Looks like: American elm - winged elm - cedar elm - field elm
+Additional Range Information: Ulmus rubra is native to North America. Range may be expanded by planting. Download the full-size PDF map.
+More Information: Fall Color - Wood
+External Links: USDAFS Silvics of North America - USDAFS FEIS Silvics - USDA Plants Database - USDAFS Forest Products Lab
+All material 2025 Virginia Tech Dept. of Forest Resources and Environmental Conservation; Photos and text by: John Seiler, Edward Jensen, Alex Niemiera, and John Peterson; Silvics reprinted from Ag Handbook 654; range map source information
+
+--- IMAGE DESCRIPTIONS ---
+Ulmus_rubra_leaf.jpg: slippery elm leaf image
+Ulmus_rubra_flower.jpg: slippery elm flower image
+Ulmus_rubra_fruit.jpg: slippery elm fruit image
+Ulmus_rubra_twig.jpg: slippery elm twig image
+Ulmus_rubra_bark.jpg: slippery elm bark image
+Ulmus_rubra_form.jpg: slippery elm form image
+Ulmus_rubra_map.jpg: slippery elm map image
+
+--- FILES IN THIS FOLDER ---
+Ulmus_rubra_leaf.jpg
+Ulmus_rubra_flower.jpg
+Ulmus_rubra_fruit.jpg
+Ulmus_rubra_twig.jpg
+Ulmus_rubra_bark.jpg
+Ulmus_rubra_form.jpg
+Ulmus_rubra_map.jpg
+Ulmus_rubra_plant_guide.pdf

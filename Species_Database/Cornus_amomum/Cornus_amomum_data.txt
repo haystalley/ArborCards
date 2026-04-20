@@ -1,0 +1,47 @@
+=== silky dogwood ===
+Scientific Name: Cornus amomum
+Common Name:     silky dogwood
+Family:          Cornaceae
+USDA Symbol:     COAM2
+
+--- TAGS ---
+Deciduous, Shrub, Native
+
+--- USDA GENERAL DATA ---
+Symbol:       COAM2
+Group:        Dicot
+Duration:     Perennial
+Growth Habit: Shrub
+Native Status:L48 (N)
+
+--- DESCRIPTION ---
+Leaf: Opposite, simple, oval, 2 to 4 inches long, arcuately veined, margin entire, green above and maybe silky grayish when young, paler below.
+Flower: Species is monoecious; small, white, in flat-topped clusters, 2 inches in diameter that appear in late spring and early summer.
+Fruit: Berry-like drupes developing in flat-topped clusters, 1/4 inch in diameter, bluish with white blotches, maturing in late summer.
+Twig: Red-purple (may be green-tinged), bearing silky gray hairs with a salmon colored pith, buds are narrow, pointed, hairy, sessile, and close to the stem.
+Bark: At first red-purple (but may be green tinged); later turns brown and shallowly fissured.
+Form: A small to medium sized, multi-stemmed, suckering shrub up to 10 feet tall. Branches may bend down and root in wet soil.
+Looks like: red-osier dogwood - roughleaf dogwood - gray dogwood - flowering dogwood
+Additional Range Information: Cornus amomum is native to North America. Range may be expanded by planting. Download the full-size PDF map.
+More Information: Fall Color
+External Links: USDA Plants Database
+All material 2025 Virginia Tech Dept. of Forest Resources and Environmental Conservation; Photos and text by: John Seiler, Edward Jensen, Alex Niemiera, and John Peterson; Silvics reprinted from Ag Handbook 654; range map source information
+
+--- IMAGE DESCRIPTIONS ---
+Cornus_amomum_leaf.jpg: silky dogwood leaf image
+Cornus_amomum_flower.jpg: silky dogwood flower image
+Cornus_amomum_fruit.jpg: silky dogwood fruit image
+Cornus_amomum_twig.jpg: silky dogwood twig image
+Cornus_amomum_bark.jpg: silky dogwood bark image
+Cornus_amomum_form.jpg: silky dogwood form image
+Cornus_amomum_map.jpg: silky dogwood map image
+
+--- FILES IN THIS FOLDER ---
+Cornus_amomum_leaf.jpg
+Cornus_amomum_flower.jpg
+Cornus_amomum_fruit.jpg
+Cornus_amomum_twig.jpg
+Cornus_amomum_bark.jpg
+Cornus_amomum_form.jpg
+Cornus_amomum_map.jpg
+Cornus_amomum_fact_sheet.pdf

@@ -267,144 +267,113 @@ async function scrapeVTSpeciesPage(page, species) {
 
 // ─── USDA PLANTS: Species Data ───────────────────────────────────
 const USDA_BASE = 'https://plants.sc.egov.usda.gov';
+const USDA_API  = 'https://plantsservices.sc.egov.usda.gov/api';
 
-async function extractUSDAPageData(page, sciName) {
-  // Wait for Angular to render the general-info table before reading
-  try {
-    await page.waitForSelector('div.general-info', { timeout: 15000 });
-  } catch (_) {
-    // Page loaded but Angular table never appeared — probably wrong species
-    return null;
-  }
-
-  return page.evaluate((sciName, usdaBase) => {
-    // Verify this page is actually for the right genus at minimum
-    const pageText = document.body.innerText.toLowerCase();
-    const genus = sciName.toLowerCase().split(' ')[0];
-    if (!pageText.includes(genus)) return null;
-
-    // Read the general-info table: <tr><th><h3>Label</h3></th><td>...<span>Value</span>...</td></tr>
-    const fields = {};
-    document.querySelectorAll('div.general-info tr').forEach(row => {
-      const label = row.querySelector('th h3')?.textContent?.trim() || '';
-      const value = row.querySelector('td')?.textContent?.trim() || '';
-      if (label) fields[label] = value;
-    });
-
-    const symbol = fields['Symbol'] || fields['symbol'] || '';
-    const group = fields['Group'] || fields['Plant Type'] || '';
-    const duration = fields['Duration'] || '';
-    // Field is "Growth Habits" (plural) on the Angular page
-    const growthHabit = fields['Growth Habits'] || fields['Growth Habit'] || '';
-    const nativeStatus = (fields['Native Status'] || '').replace(/\s+/g, ' ').trim();
-
-    // PDF links — hrefs are relative, prepend domain
-    let factSheetUrl = null, plantGuideUrl = null;
-    Array.from(document.querySelectorAll('a[href]')).forEach(a => {
-      const rawHref = a.getAttribute('href') || '';
-      const href = rawHref.startsWith('http') ? rawHref : usdaBase + rawHref;
-      const text = a.textContent.toLowerCase();
-      if (!factSheetUrl && href.toLowerCase().endsWith('.pdf') &&
-          (text.includes('fact sheet') || rawHref.includes('factsheet') || rawHref.includes('fact_sheet'))) {
-        factSheetUrl = href;
+// Lightweight HTTPS GET that returns the response body as a string
+function httpsGet(url, timeoutMs = 10000) {
+  return new Promise((resolve, reject) => {
+    const proto = url.startsWith('https') ? https : http;
+    const req = proto.get(url, { timeout: timeoutMs }, res => {
+      if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+        return httpsGet(res.headers.location, timeoutMs).then(resolve).catch(reject);
       }
-      if (!plantGuideUrl && href.toLowerCase().endsWith('.pdf') &&
-          (text.includes('plant guide') || rawHref.includes('plantguide') || rawHref.includes('plant_guide'))) {
-        plantGuideUrl = href;
-      }
+      let data = '';
+      res.on('data', chunk => { data += chunk; });
+      res.on('end', () => resolve(data));
+      res.on('error', reject);
     });
-
-    // Distribution map image
-    let mapImageUrl = null;
-    const mapImg = document.querySelector('img[alt*="distribution" i], img[alt*="range" i], img[src*="distribution"]');
-    if (mapImg) {
-      const raw = mapImg.getAttribute('src') || '';
-      mapImageUrl = raw.startsWith('http') ? raw : usdaBase + raw;
-    }
-
-    return { symbol, group, duration, growthHabit, nativeStatus, factSheetUrl, plantGuideUrl, mapImageUrl };
-  }, sciName, USDA_BASE);
+    req.on('timeout', () => { req.destroy(); reject(new Error('Request timed out')); });
+    req.on('error', reject);
+  });
 }
 
-async function scrapeUSDASpecies(page, scientificName) {
-  console.log(`  🌱 USDA: searching for ${scientificName}...`);
-  // Normalise hybrid markers so names like "Abelia xgrandiflora" or "Abelia ×grandiflora"
-  // produce the correct symbol candidates (ABGR).  We work token-by-token to avoid
-  // mutating legitimate 'x' characters inside real words (e.g. "Taxus", "Quercus").
-  //   × (U+00D7) — always a hybrid marker, safe to strip globally
-  //   Leading 'x' on a token — hybrid prefix (xgrandiflora → grandiflora)
-  //   Standalone 'x' token   — hybrid separator (Cupressus x macrocarpa → Cupressus macrocarpa)
-  const nameParts = scientificName
-    .replace(/×/g, '')           // remove Unicode hybrid marker from any position
-    .split(/\s+/)
-    .filter(p => p.length > 0)
-    .map(p => p.replace(/^x([a-z])/, '$1'))   // "xgrandiflora" → "grandiflora"
-    .filter(p => p !== 'x' && p.length > 0);  // remove bare 'x' hybrid-separator tokens
+// Fetch structured USDA data for a symbol via the plantsservices REST API.
+// Returns the normalised data object or null if symbol is wrong/not found.
+async function fetchUSDADataFromAPI(symbol, sciName) {
+  if (!symbol) return null;
+  try {
+    const url = `${USDA_API}/PlantProfile?symbol=${encodeURIComponent(symbol)}`;
+    const raw = await httpsGet(url);
+    const d = JSON.parse(raw);
 
-  // Generate candidate USDA symbols to try (most common patterns)
-  const genus = nameParts[0] || '';
-  const epithet = nameParts[1] || '';
-  const candidates = [
-    (genus.slice(0, 2) + epithet.slice(0, 2)).toUpperCase(),
-    (genus.slice(0, 2) + epithet.slice(0, 3)).toUpperCase(),
-    (genus.slice(0, 4)).toUpperCase(),
-    (genus.slice(0, 3) + epithet.slice(0, 1)).toUpperCase()
-  ];
+    // Verify the API returned the right genus
+    const pageSciName = (d.ScientificName || '').replace(/<[^>]+>/g, '').trim().toLowerCase();
+    const queryGenus = sciName.toLowerCase().split(' ')[0];
+    if (!pageSciName.includes(queryGenus)) return null;
 
-  for (const sym of [...new Set(candidates)]) {
-    if (!sym || sym.length < 2) continue;
-    try {
-      // Correct URL: plants.sc.egov.usda.gov/plant-profile/SYMBOL
-      const profileUrl = `${USDA_BASE}/plant-profile/${sym}`;
-      // Use domcontentloaded — Angular keeps making background requests so networkidle never fires.
-      // The waitForSelector('div.general-info') inside extractUSDAPageData handles Angular rendering.
-      await page.goto(profileUrl, { waitUntil: 'domcontentloaded', timeout: 25000 });
-      await delay(500, 1000);
+    // Build a single-line native status string: "CAN (N) | L48 (N)"
+    const nativeStatuses = Array.isArray(d.NativeStatuses) ? d.NativeStatuses : [];
+    const nativeStatus = nativeStatuses
+      .map(ns => `${ns.Region} (${ns.Status})`)
+      .join(' | ');
 
-      const result = await extractUSDAPageData(page, scientificName);
+    const duration    = (d.Durations    || []).join(', ');
+    const growthHabit = (d.GrowthHabits || []).join(', ');
 
-      if (result && (result.symbol || result.group || result.growthHabit)) {
-        console.log(`    ✓ USDA found: symbol=${result.symbol}, habit=${result.growthHabit}`);
-        return result;
-      }
-    } catch (e) {
-      // try next candidate symbol
+    // PDF URLs (relative paths become absolute)
+    const toAbsolute = rel => rel ? (rel.startsWith('http') ? rel : USDA_BASE + rel) : null;
+    const factSheetUrl  = toAbsolute((d.FactSheetUrls  || [])[0] || null);
+    const plantGuideUrl = toAbsolute((d.PlantGuideUrls || [])[0] || null);
+
+    return {
+      symbol:      d.Symbol || symbol,
+      group:       d.Group  || '',
+      duration,
+      growthHabit,
+      nativeStatus,
+      factSheetUrl,
+      plantGuideUrl,
+      mapImageUrl: null
+    };
+  } catch (_) {
+    return null;
+  }
+}
+
+// Try the symbol extracted from the VT page first, then fall back to guessing.
+// `page` is still accepted so the browser-based map-image path can be preserved
+// in saveSpeciesFiles, but we no longer hit the USDA Angular app for core data.
+async function scrapeUSDASpecies(page, scientificName, vtSymbol = '') {
+  console.log(`  🌱 USDA: fetching data for ${scientificName}...`);
+
+  // 1. VT page already knows the correct symbol — try it first via API
+  if (vtSymbol) {
+    const result = await fetchUSDADataFromAPI(vtSymbol, scientificName);
+    if (result) {
+      console.log(`    ✓ USDA API (VT symbol ${vtSymbol}): ns="${result.nativeStatus}"`);
+      return result;
     }
-    await delay(800, 1500);
   }
 
-  // Fallback: search by scientific name
-  try {
-    const searchUrl = `${USDA_BASE}/home/search?term=${encodeURIComponent(scientificName)}&columns=Symbol,Scientific_Name,Common_Name`;
-    // networkidle preferred for search so results have time to load; if it times out the
-    // page content may still be usable, so catch timeout and continue rather than abort.
-    try {
-      await page.goto(searchUrl, { waitUntil: 'networkidle', timeout: 25000 });
-    } catch (e) {
-      if (e.name !== 'TimeoutError' && !e.message.includes('Timeout')) throw e;
-      // Timed out waiting for idle — page content may already be rendered; continue
-    }
-    await delay(2000, 3000);
+  // 2. Generate candidate symbols and try each via the fast REST API.
+  // Normalise hybrid markers so names like "Abelia xgrandiflora" or "Abelia ×grandiflora"
+  // produce the correct symbol candidates (ABGR).
+  const nameParts = scientificName
+    .replace(/×/g, '')
+    .split(/\s+/)
+    .filter(p => p.length > 0)
+    .map(p => p.replace(/^x([a-z])/, '$1'))
+    .filter(p => p !== 'x' && p.length > 0);
+  const genus   = nameParts[0] || '';
+  const epithet = nameParts[1] || '';
+  const baseCandidates = [
+    (genus.slice(0, 2) + epithet.slice(0, 2)).toUpperCase(),
+    (genus.slice(0, 4)).toUpperCase(),
+    (genus.slice(0, 3) + epithet.slice(0, 1)).toUpperCase(),
+  ];
+  const candidates = [...baseCandidates];
+  for (const base of baseCandidates) {
+    for (let n = 2; n <= 7; n++) candidates.push(base + n);
+  }
 
-    // Find a link to a plant profile in the search results
-    const profileHref = await page.evaluate((base) => {
-      const link = document.querySelector(`a[href*="/plant-profile/"]`);
-      if (!link) return null;
-      const raw = link.getAttribute('href') || '';
-      return raw.startsWith('http') ? raw : base + raw;
-    }, USDA_BASE);
-
-    if (profileHref) {
-      await page.goto(profileHref, { waitUntil: 'domcontentloaded', timeout: 25000 });
-      await delay(500, 1000);
-      const result = await extractUSDAPageData(page, scientificName);
-      if (result && (result.symbol || result.growthHabit)) {
-        console.log(`    ✓ USDA found via search: symbol=${result.symbol}`);
-        return result;
-      }
+  for (const sym of [...new Set(candidates)]) {
+    if (!sym || sym.length < 2 || sym === vtSymbol) continue;
+    await delay(150, 400);
+    const result = await fetchUSDADataFromAPI(sym, scientificName);
+    if (result) {
+      console.log(`    ✓ USDA API (guessed ${sym}): ns="${result.nativeStatus}"`);
+      return result;
     }
-  } catch (e) {
-    // search fallback failed
   }
 
   console.log(`    ⚠️  No USDA data found for ${scientificName}`);
@@ -606,8 +575,8 @@ async function main() {
         const { folderName, data: vtData } = await scrapeVTSpeciesPage(vtPage, species);
         await delay(2000, 4000);
 
-        // 2. Scrape USDA
-        const usdaData = await scrapeUSDASpecies(usdaPage, vtData.scientificName || species.scientific);
+        // 2. Scrape USDA — pass the VT symbol so the API can find the right profile on first try
+        const usdaData = await scrapeUSDASpecies(usdaPage, vtData.scientificName || species.scientific, vtData.symbol || '');
         await delay(2000, 5000);
 
         // 3. Save files

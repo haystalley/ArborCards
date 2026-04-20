@@ -1,0 +1,47 @@
+=== American sycamore ===
+Scientific Name: Platanus occidentalis
+Common Name:     American sycamore
+Family:          Platanaceae
+USDA Symbol:     PLOC
+
+--- TAGS ---
+Deciduous, Tree, Native
+
+--- USDA GENERAL DATA ---
+Symbol:       PLOC
+Group:        Dicot
+Duration:     Perennial
+Growth Habit: Tree
+Native Status:CAN (N) | L48 (N)
+
+--- DESCRIPTION ---
+Leaf: Alternate, simple, palmately veined, 4 to 8 inches wide, ovate in shape, with three to five lobes, margins coarsely toothed, petiole bases encircle and enclose the buds, veins may be pubescent below.
+Flower: Species is monoecious; imperfect, both male and females are very small and appear in dense round clusters, typically a single cluster to a stalk, appearing with the leaves.
+Fruit: A spherical multiple of achenes borne on a 3 to 6 inch stalk. Each seed is tiny, winged, and 1/2 inch long; maturing in November, disseminating in late winter.
+Twig: Obviously zigzag, quite stout and orange-brown in color; leaf scar surrounds the bud and the stipule scar surrounds the twig; terminal bud is absent; lateral buds are reddish, resinous, with a single, cap-like scale.
+Bark: Thin, mottled brown, green, tan and white; older stems are gray-brown and scaly. The most striking feature of this tree, often referred to as "camouflage" bark that readily exfoliates.
+Form: A very massive tree with heavy, spreading branches with obviously zigzag twigs reaching up to and over 100 feet tall. In winter, the persistent fruits resemble Christmas tree ornaments.
+Looks like: London plane tree - California sycamore - Arizona sycamore
+Additional Range Information: Platanus occidentalis is native to North America. Range may be expanded by planting. Download the full-size PDF map.
+More Information: Fall Color - Wood
+External Links: USDAFS Silvics of North America - USDAFS FEIS Silvics - USDA Plants Database - Horticulture Information - USDAFS Forest Products Lab
+All material 2025 Virginia Tech Dept. of Forest Resources and Environmental Conservation; Photos and text by: John Seiler, Edward Jensen, Alex Niemiera, and John Peterson; Silvics reprinted from Ag Handbook 654; range map source information
+
+--- IMAGE DESCRIPTIONS ---
+Platanus_occidentalis_leaf.jpg: American sycamore leaf image
+Platanus_occidentalis_flower.jpg: American sycamore flower image
+Platanus_occidentalis_fruit.jpg: American sycamore fruit image
+Platanus_occidentalis_twig.jpg: American sycamore twig image
+Platanus_occidentalis_bark.jpg: American sycamore bark image
+Platanus_occidentalis_form.jpg: American sycamore form image
+Platanus_occidentalis_map.jpg: American sycamore map image
+
+--- FILES IN THIS FOLDER ---
+Platanus_occidentalis_leaf.jpg
+Platanus_occidentalis_flower.jpg
+Platanus_occidentalis_fruit.jpg
+Platanus_occidentalis_twig.jpg
+Platanus_occidentalis_bark.jpg
+Platanus_occidentalis_form.jpg
+Platanus_occidentalis_map.jpg
+Platanus_occidentalis_plant_guide.pdf

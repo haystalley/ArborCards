@@ -1,0 +1,46 @@
+=== shagbark hickory ===
+Scientific Name: Carya ovata
+Common Name:     shagbark hickory
+Family:          Juglandaceae
+USDA Symbol:     CAOV2
+
+--- TAGS ---
+Deciduous, Tree, Native
+
+--- USDA GENERAL DATA ---
+Symbol:       CAOV2
+Group:        Dicot
+Duration:     Perennial
+Growth Habit: Tree
+Native Status:CAN (N) | L48 (N)
+
+--- DESCRIPTION ---
+Leaf: Alternate, pinnately compound, 8 to 14 inches long with 5 (sometimes 7) leaflets, lateral leaflets are obovate to lanceolate, terminal leaflets are much larger than the laterals, margins serrate and ciliate, rachis stout and mostly glabrous; green above and paler below.
+Flower: Species is monoecious; male flowers are yellow-green catkins, hanging in 3's, 2 to 3 inches long; females are very short, in clusters at the end of branches, both appear spring.
+Fruit: Nearly round, 1 1/2 to 2 inches, with a very thick husk; nut is distinctly 4-ribbed, and the seed is sweet and delicious; maturing in fall.
+Twig: Stout and usually tomentose, but may be somewhat pubescent near terminal bud, numerous lighter lenticels; leaf scars are raised, 3-lobed to semicircular - best described as a "monkey face"; terminal bud is large, brown, and pubescent, covered with 3 to 4 brown scales, more elongated than other hickories.
+Bark: At first smooth and gray, later broken into long, wide plates attached at the middle, curving away from the trunk resulting in a coarsely shaggy appearance.
+Form: A tall tree reaching over 120 feet tall with a straight trunk and an open round to oblong crown.
+Looks like: shellbark hickory - red hickory - mockernut hickory - pignut hickory
+Additional Range Information: Carya ovata is native to North America. Range may be expanded by planting. Download the full-size PDF map.
+More Information: Fall Color - Wood
+External Links: USDAFS Silvics of North America - USDAFS FEIS Silvics - USDA Plants Database - Horticulture Information - USDAFS Forest Products Lab
+All material 2025 Virginia Tech Dept. of Forest Resources and Environmental Conservation; Photos and text by: John Seiler, Edward Jensen, Alex Niemiera, and John Peterson; Silvics reprinted from Ag Handbook 654; range map source information
+
+--- IMAGE DESCRIPTIONS ---
+Carya_ovata_leaf.jpg: shagbark hickory leaf image
+Carya_ovata_flower.jpg: shagbark hickory flower image
+Carya_ovata_fruit.jpg: shagbark hickory fruit image
+Carya_ovata_twig.jpg: shagbark hickory twig image
+Carya_ovata_bark.jpg: shagbark hickory bark image
+Carya_ovata_form.jpg: shagbark hickory form image
+Carya_ovata_map.jpg: shagbark hickory map image
+
+--- FILES IN THIS FOLDER ---
+Carya_ovata_leaf.jpg
+Carya_ovata_flower.jpg
+Carya_ovata_fruit.jpg
+Carya_ovata_twig.jpg
+Carya_ovata_bark.jpg
+Carya_ovata_form.jpg
+Carya_ovata_map.jpg

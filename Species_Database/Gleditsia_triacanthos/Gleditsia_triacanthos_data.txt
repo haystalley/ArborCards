@@ -1,0 +1,48 @@
+=== honeylocust ===
+Scientific Name: Gleditsia triacanthos
+Common Name:     honeylocust
+Family:          Fabaceae
+USDA Symbol:     GLTR
+
+--- TAGS ---
+Deciduous, Tree, Native
+
+--- USDA GENERAL DATA ---
+Symbol:       GLTR
+Group:        Dicot
+Duration:     Perennial
+Growth Habit: Shrub, Tree
+Native Status:CAN (N) | L48 (N)
+
+--- DESCRIPTION ---
+Leaf: Alternate, pinnately compound, 5 to 8 inches long, with 15 to 30 leaflets or bipinnately compound with 4 to 7 pairs of minor leaflets. Leaflets are 1/2 to 1 1/2 inches long, ovate to elliptical in shape, green to yellow-green.
+Flower: Small, greenish yellow, displayed on 2 to 3 inch long narrow, hanging clusters, not showy, but very fragrant, appearing in late spring and early summer.
+Fruit: A very distinctive, 6 to 8 inches long, flattened, red-brown, leathery pod that becomes dry and twisted; pod contains many oval, dark brown, shiny seeds, 1/3 inch long, maturing in late summer and early fall.
+Twig: May be either stout or slender, prominantly zig-zag, red-brown to light brown in color, numerous lenticels and branched thorns. Lateral buds are very small and sunken.
+Bark: Initially, gray-brown to bronze, and smooth with many horizontal lenticels, later breaking into long, narrow, curling plates. Often displaying clusters of large, branched thorns on trunk.
+Form: A medium size tree with a typically short bole and an airy, spreading crown, reaches up to 80 feet tall.
+Looks like: waterlocust - mimosa - black locust
+Additional Range Information: Gleditsia triacanthos is native to North America. Range may be expanded by planting. Download the full-size PDF map.
+More Information: Fall Color - Landowner Factsheet
+External Links: USDAFS Silvics of North America - USDAFS FEIS Silvics - USDA Plants Database - Horticulture Information - USDAFS Forest Products Lab
+All material 2025 Virginia Tech Dept. of Forest Resources and Environmental Conservation; Photos and text by: John Seiler, Edward Jensen, Alex Niemiera, and John Peterson; Silvics reprinted from Ag Handbook 654; range map source information
+
+--- IMAGE DESCRIPTIONS ---
+Gleditsia_triacanthos_leaf.jpg: honeylocust leaf image
+Gleditsia_triacanthos_flower.jpg: honeylocust flower image
+Gleditsia_triacanthos_fruit.jpg: honeylocust fruit image
+Gleditsia_triacanthos_twig.jpg: honeylocust twig image
+Gleditsia_triacanthos_bark.jpg: honeylocust bark image
+Gleditsia_triacanthos_form.jpg: honeylocust form image
+Gleditsia_triacanthos_map.jpg: honeylocust map image
+
+--- FILES IN THIS FOLDER ---
+Gleditsia_triacanthos_leaf.jpg
+Gleditsia_triacanthos_flower.jpg
+Gleditsia_triacanthos_fruit.jpg
+Gleditsia_triacanthos_twig.jpg
+Gleditsia_triacanthos_bark.jpg
+Gleditsia_triacanthos_form.jpg
+Gleditsia_triacanthos_map.jpg
+Gleditsia_triacanthos_fact_sheet.pdf
+Gleditsia_triacanthos_plant_guide.pdf

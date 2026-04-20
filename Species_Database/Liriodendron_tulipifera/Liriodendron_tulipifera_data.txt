@@ -1,0 +1,46 @@
+=== yellow-poplar ===
+Scientific Name: Liriodendron tulipifera
+Common Name:     yellow-poplar
+Family:          Magnoliaceae
+USDA Symbol:     LITU
+
+--- TAGS ---
+Deciduous, Tree, Native
+
+--- USDA GENERAL DATA ---
+Symbol:       LITU
+Group:        Dicot
+Duration:     Perennial
+Growth Habit: Tree
+Native Status:CAN (N) | L48 (N)
+
+--- DESCRIPTION ---
+Leaf: Alternate, simple, palmately veined, orbicular, 4-lobed with an entire margin, 4 to 8 inches long, notched to flat top. Somewhat shaped like a tulip, light green to green.
+Flower: Perfect, showy, resembling a large tulip, but high in the tree, 2 1/2 inches long, with yellow-green petals and an orange corolla, appearing in late spring to early summer.
+Fruit: An oblong (cone-like) aggregate of samaras (2 inches long), deciduous at maturity; each samara is 1-winged, 1 1/2 inches long, and curved upwards at seed cavity (resembling the front keel of a boat); maturing August to October and disseminating through late fall and winter; base whorls of samaras persist on fruit into following spring and resemble wooden flowers high in the tree.
+Twig: Red-brown in color, often with a shiny appearance or a waxy bloom. Stipules are large and encircle the twig; buds are elongated and valvate, resembling a "duck bill". Twigs have a sweet, spicy odor when broken.
+Bark: Light gray-green and smooth when young, later developing flat-topped ridges and conspicuous white colored furrows in diamond shaped patterns. On older trees sapsucker holes are common.
+Form: In a forest, a large tree with a long, straight limb-free bole very often reaching over 100 feet tall. Open-grown trees have a pyramidal crown when young, becoming oval in shape with time.
+Additional Range Information: Liriodendron tulipifera is native to North America. Range may be expanded by planting. Download the full-size PDF map.
+More Information: Fall Color - Wood
+External Links: USDAFS Silvics of North America - USDAFS FEIS Silvics - USDA Plants Database - Horticulture Information - USDAFS Forest Products Lab
+All material 2025 Virginia Tech Dept. of Forest Resources and Environmental Conservation; Photos and text by: John Seiler, Edward Jensen, Alex Niemiera, and John Peterson; Silvics reprinted from Ag Handbook 654; range map source information
+
+--- IMAGE DESCRIPTIONS ---
+Liriodendron_tulipifera_leaf.jpg: yellow-poplar leaf image
+Liriodendron_tulipifera_flower.jpg: yellow-poplar flower image
+Liriodendron_tulipifera_fruit.jpg: yellow-poplar fruit image
+Liriodendron_tulipifera_twig.jpg: yellow-poplar twig image
+Liriodendron_tulipifera_bark.jpg: yellow-poplar bark image
+Liriodendron_tulipifera_form.jpg: yellow-poplar form image
+Liriodendron_tulipifera_map.jpg: yellow-poplar map image
+
+--- FILES IN THIS FOLDER ---
+Liriodendron_tulipifera_leaf.jpg
+Liriodendron_tulipifera_flower.jpg
+Liriodendron_tulipifera_fruit.jpg
+Liriodendron_tulipifera_twig.jpg
+Liriodendron_tulipifera_bark.jpg
+Liriodendron_tulipifera_form.jpg
+Liriodendron_tulipifera_map.jpg
+Liriodendron_tulipifera_plant_guide.pdf

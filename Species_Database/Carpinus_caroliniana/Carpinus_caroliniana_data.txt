@@ -1,0 +1,48 @@
+=== hornbeam ===
+Scientific Name: Carpinus caroliniana
+Common Name:     hornbeam
+Family:          Betulaceae
+USDA Symbol:     CACA18
+
+--- TAGS ---
+Deciduous, Shrub, Native
+
+--- USDA GENERAL DATA ---
+Symbol:       CACA18
+Group:        Dicot
+Duration:     Perennial
+Growth Habit: Shrub, Tree
+Native Status:CAN (N) | L48 (N)
+
+--- DESCRIPTION ---
+Leaf: Alternate, simple, elliptical to ovate, 3 to 5 inches long, pinnately veined, tip acuminate, doubly serrate margin; waxy, smooth green above, paler below.
+Flower: Species is monoecious; males catkins yellow-green, 1 to 2 inches long, hanging; female catkins yellow-green and fuzzy appearing from new branch tips, 1/2 to 3/4 inch long, both appearing in mid to late spring.
+Fruit: Small ribbed nutlet carried on a 3-lobed, slightly folded leafy bract that is 1 inch long (somewhat resembles a maple leaf), bracts are clustered on a long (4 to 6 inches) hanging stalk; ripen in late summer and fall, disperse through the winter.
+Twig: Slender, somewhat zigzag, brown to gray in color; buds are brown, angled, with a tan silky edge to each scale (making the buds appear lined), approximately 1/4 inch or less in length.
+Bark: Thin, smooth, gray to bluish gray regardless of age or size; trunk is fluted heavily, resulting in a muscular appearance.
+Form: A small, nearly shrubby tree reaching up to 25 feet tall with a rounded crown and a twisted trunk.
+Looks like: hophornbeam - hazel alder - Japanese hornbeam - European hornbeam
+Additional Range Information: Carpinus caroliniana is native to North America. Range may be expanded by planting. Download the full-size PDF map.
+More Information: Fall Color
+External Links: USDAFS Silvics of North America - USDAFS FEIS Silvics - USDA Plants Database - Horticulture Information - USDAFS Forest Products Lab
+All material 2025 Virginia Tech Dept. of Forest Resources and Environmental Conservation; Photos and text by: John Seiler, Edward Jensen, Alex Niemiera, and John Peterson; Silvics reprinted from Ag Handbook 654; range map source information
+
+--- IMAGE DESCRIPTIONS ---
+Carpinus_caroliniana_leaf.jpg: hornbeam leaf image
+Carpinus_caroliniana_flower.jpg: hornbeam flower image
+Carpinus_caroliniana_fruit.jpg: hornbeam fruit image
+Carpinus_caroliniana_twig.jpg: hornbeam twig image
+Carpinus_caroliniana_bark.jpg: hornbeam bark image
+Carpinus_caroliniana_form.jpg: hornbeam form image
+Carpinus_caroliniana_map.jpg: hornbeam map image
+
+--- FILES IN THIS FOLDER ---
+Carpinus_caroliniana_leaf.jpg
+Carpinus_caroliniana_flower.jpg
+Carpinus_caroliniana_fruit.jpg
+Carpinus_caroliniana_twig.jpg
+Carpinus_caroliniana_bark.jpg
+Carpinus_caroliniana_form.jpg
+Carpinus_caroliniana_map.jpg
+Carpinus_caroliniana_fact_sheet.pdf
+Carpinus_caroliniana_plant_guide.pdf

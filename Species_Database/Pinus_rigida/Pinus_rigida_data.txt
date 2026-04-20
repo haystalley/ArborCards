@@ -1,0 +1,46 @@
+=== pitch pine ===
+Scientific Name: Pinus rigida
+Common Name:     pitch pine
+Family:          Pinaceae
+USDA Symbol:     PIRI
+
+--- TAGS ---
+Conifer/Evergreen, Tree, Native
+
+--- USDA GENERAL DATA ---
+Symbol:       PIRI
+Group:        Gymnosperm
+Duration:     Perennial
+Growth Habit: Tree
+Native Status:CAN (N) | L48 (N)
+
+--- DESCRIPTION ---
+Leaf: Evergreen needles, 2 1/2 to 5 inches long, with three twisted needles per fascicle, yellow-green to green.
+Flower: Species is monoecious; males cylindrical, red to yellow, in large clusters at twig tips; females yellow to red, with small, curved scales.
+Fruit: Cones are ovoid, 2 to 4 inches long, light brown in color; umbo is armed with a short, stout prickle; cones are often persistent for many years; maturing in fall.
+Twig: Orange-brown and moderately stout; buds narrowly ovoid, light gray-brown.
+Bark: Dark and scaly when young, developing red-brown or yellow-brown thick flat plates with deep furrows; sprouts of needles may be present.
+Form: Extremely variable; short and poorly formed on poor sites, but can be a straight, medium sized tree reaching 80 feet tall on better sites; epicormic sprouting is common.
+Looks like: loblolly pine - shortleaf pine - pond pine - Table Mountain pine
+Additional Range Information: Pinus rigida is native to North America. Range may be expanded by planting. Download the full-size PDF map.
+More Information: Wood
+External Links: USDAFS Silvics of North America - USDAFS FEIS Silvics - USDA Plants Database - USDAFS Forest Products Lab
+All material 2025 Virginia Tech Dept. of Forest Resources and Environmental Conservation; Photos and text by: John Seiler, Edward Jensen, Alex Niemiera, and John Peterson; Silvics reprinted from Ag Handbook 654; range map source information
+
+--- IMAGE DESCRIPTIONS ---
+Pinus_rigida_leaf.jpg: pitch pine leaf image
+Pinus_rigida_flower.jpg: pitch pine flower image
+Pinus_rigida_fruit.jpg: pitch pine fruit image
+Pinus_rigida_twig.jpg: pitch pine twig image
+Pinus_rigida_bark.jpg: pitch pine bark image
+Pinus_rigida_form.jpg: pitch pine form image
+Pinus_rigida_map.jpg: pitch pine map image
+
+--- FILES IN THIS FOLDER ---
+Pinus_rigida_leaf.jpg
+Pinus_rigida_flower.jpg
+Pinus_rigida_fruit.jpg
+Pinus_rigida_twig.jpg
+Pinus_rigida_bark.jpg
+Pinus_rigida_form.jpg
+Pinus_rigida_map.jpg
