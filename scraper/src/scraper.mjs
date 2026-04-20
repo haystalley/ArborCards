@@ -90,6 +90,11 @@ function httpPost(urlStr, postBody) {
       timeout: 30000
     };
     const req = https.request(opts, res => {
+      if (res.statusCode < 200 || res.statusCode >= 300) {
+        res.resume();
+        reject(new Error(`HTTP ${res.statusCode} from POST to ${urlStr}`));
+        return;
+      }
       const chunks = [];
       res.on('data', c => chunks.push(c));
       res.on('end', () => resolve(Buffer.concat(chunks).toString('latin1')));
@@ -125,6 +130,16 @@ async function scrapeVTSpeciesList() {
       common: common.trim(),
       url: VT_BASE + relHref
     });
+  }
+
+  // Sanity check — if the upstream page structure changes we fail loud rather than
+  // silently scraping a partial list.  The database has had ~1,136 entries for years;
+  // fewer than 1,000 almost certainly means the HTML format changed.
+  if (species.length < 1000) {
+    throw new Error(
+      `Expected at least 1,000 species from VT data_results.cfm but only got ${species.length}. ` +
+      'The page structure may have changed. Check the regex in scrapeVTSpeciesList.'
+    );
   }
 
   console.log(`  Found ${species.length} species on VT Dendrology`);
