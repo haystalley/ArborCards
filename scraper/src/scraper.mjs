@@ -313,10 +313,18 @@ async function extractUSDAPageData(page, sciName) {
 
 async function scrapeUSDASpecies(page, scientificName) {
   console.log(`  🌱 USDA: searching for ${scientificName}...`);
-  // Strip hybrid × (U+00D7) and any leading non-alpha chars from each part so that
-  // names like "Abelia ×grandiflora" produce the correct symbol candidates (ABGR).
-  const cleanedName = scientificName.replace(/[×x]\s*/gi, '').trim();
-  const nameParts = cleanedName.split(/\s+/);
+  // Normalise hybrid markers so names like "Abelia xgrandiflora" or "Abelia ×grandiflora"
+  // produce the correct symbol candidates (ABGR).  We work token-by-token to avoid
+  // mutating legitimate 'x' characters inside real words (e.g. "Taxus", "Quercus").
+  //   × (U+00D7) — always a hybrid marker, safe to strip globally
+  //   Leading 'x' on a token — hybrid prefix (xgrandiflora → grandiflora)
+  //   Standalone 'x' token   — hybrid separator (Cupressus x macrocarpa → Cupressus macrocarpa)
+  const nameParts = scientificName
+    .replace(/×/g, '')           // remove Unicode hybrid marker from any position
+    .split(/\s+/)
+    .filter(p => p.length > 0)
+    .map(p => p.replace(/^x([a-z])/, '$1'))   // "xgrandiflora" → "grandiflora"
+    .filter(p => p !== 'x' && p.length > 0);  // remove bare 'x' hybrid-separator tokens
 
   // Generate candidate USDA symbols to try (most common patterns)
   const genus = nameParts[0] || '';
