@@ -71,7 +71,7 @@ async function testUSDAPage(page, symbol, expectedGenus) {
   // Wait for Angular to render
   let tableFound = false;
   try {
-    await page.waitForSelector('div.general-info', { timeout: 15000 });
+    await page.waitForSelector('div.general-info', { timeout: 20000 });
     tableFound = true;
   } catch (_) {
     console.log(`  ❌ div.general-info never appeared — Angular did not render`);
@@ -155,7 +155,7 @@ async function quickTest() {
     await delay(2000, 3000);
 
     const vt2 = await testVTPage(page,
-      'https://dendro.cnre.vt.edu/dendrology/syllabus/factsheet.cfm?ID=136',
+      'https://dendro.cnre.vt.edu/dendrology/syllabus/factsheet.cfm?ID=111',
       'Pinus strobus (eastern white pine)');
     vtResults.push({ name: 'Pinus strobus', ...vt2 });
     await delay(2000, 3000);
@@ -191,16 +191,28 @@ async function quickTest() {
   console.log(`VT pages loaded:      ${vtResults.length}/2`);
   console.log(`USDA pages with data: ${usdaResults.filter(r => r.growthHabit).length}/${usdaResults.length}`);
 
-  const allUsdaOk = usdaResults.length >= 1 && usdaResults.every(r => r.growthHabit);
+  const expectedSymbols = ['ACRU', 'PIST'];
+  const allUsdaOk = expectedSymbols.every(sym =>
+    usdaResults.some(r => r.symbol === sym && r.growthHabit));
   const allVtOk = vtResults.every(r => r.scientificName && !r.scientificName.includes('\n'));
-  const mapOk = vtResults.every(r => r.mapImgs.length <= r.totalImages);
+  // Bug 3: each VT page should have exactly 1 map image detected, and its filename must start with "map"
+  const mapOk = vtResults.length > 0 &&
+    vtResults.every(r => r.mapImgs.length === 1 && /^map/.test(r.mapImgs[0]?.filename || ''));
+
+  const mapDetail = vtResults.map(r => {
+    if (r.mapImgs.length === 0) return `  ${r.name}: ❌ no map detected`;
+    if (r.mapImgs.length > 1) return `  ${r.name}: ❌ ${r.mapImgs.length} maps detected (${r.mapImgs.map(i => i.filename).join(', ')})`;
+    if (!/^map/.test(r.mapImgs[0]?.filename || '')) return `  ${r.name}: ❌ filename "${r.mapImgs[0]?.filename}" doesn't start with "map"`;
+    return `  ${r.name}: ✅ 1 map → ${r.mapImgs[0].filename}`;
+  }).join('\n');
 
   console.log(`\nBug 1 (USDA domain):   ${usdaResults.length > 0 ? '✅ FIXED' : '❌ Still failing'}`);
   console.log(`Bug 2 (USDA data):     ${allUsdaOk ? '✅ FIXED' : '❌ Still failing — Growth Habits still empty'}`);
-  console.log(`Bug 3 (map detection): ${mapOk ? '✅ FIXED (filename-only check active)' : '❌ Check map results above'}`);
+  console.log(`Bug 3 (map detection): ${mapOk ? '✅ FIXED (exactly 1 map per page, filename starts with "map")' : '❌ Check map results above'}`);
+  console.log(mapDetail);
   console.log(`Bug 4 (name cleanup):  ${allVtOk ? '✅ FIXED (no embedded newlines)' : '❌ Scientific name still dirty'}`);
 
-  if (allUsdaOk && allVtOk) {
+  if (allUsdaOk && allVtOk && mapOk) {
     console.log('\n✅ All checks passed! Run: node src/scraper.mjs to scrape all 402 species.');
   } else {
     console.log('\n⚠️  Some checks failed — review output above for details.');

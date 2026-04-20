@@ -1,0 +1,77 @@
+🧪 Scraper Validation Test
+   Checks all four bug fixes (domain, Angular extraction, map detection, name cleanup)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+VT DENDROLOGY TESTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+── VT Dendrology: Acer rubrum (red maple)
+  Symbol:         ACRU
+  Scientific:     "Acer rubrum" ✅ clean
+  Family:         Aceraceae
+  Images found:   7
+  Map images:     1 → map.jpg
+
+── VT Dendrology: Pinus strobus (eastern white pine)
+  Symbol:         PIST
+  Scientific:     "Pinus strobus" ✅ clean
+  Family:         Pinaceae
+  Images found:   7
+  Map images:     1 → map.jpg
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+USDA PLANTS TESTS (plants.sc.egov.usda.gov)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+── USDA PLANTS: ACRU (acer)
+  URL: https://plants.sc.egov.usda.gov/plant-profile/ACRU
+  Fields found:   [Symbol, Group, Duration, Growth Habits, Native Status, Fact Sheet, Plant Guide]
+  Symbol:         ACRU ✅
+  Group:          Dicot ✅
+  Duration:       Perennial ✅
+  Growth Habits:  Tree ✅
+  Native Status:  CAN N
+                  
+                    |
+                  
+              
+                L48 N ✅
+  Fact Sheet PDF: https://plants.sc.egov.usda.gov/DocumentLibrary/factsheet/pdf/fs_acru.pdf
+  Plant Guide PDF:https://plants.sc.egov.usda.gov/DocumentLibrary/plantguide/pdf/pg_acru.pdf
+
+── USDA PLANTS: PIST (pinus)
+  URL: https://plants.sc.egov.usda.gov/plant-profile/PIST
+  Fields found:   [Symbol, Group, Duration, Growth Habits, Native Status, Fact Sheet]
+  Symbol:         PIST ✅
+  Group:          Gymnosperm ✅
+  Duration:       Perennial ✅
+  Growth Habits:  Tree ✅
+  Native Status:  CAN N
+                  
+                    |
+                  
+              
+                L48 N
+                  
+                    |
+                  
+              
+                SPM N ✅
+  Fact Sheet PDF: https://plants.sc.egov.usda.gov/DocumentLibrary/factsheet/pdf/fs_pist.pdf
+  Plant Guide PDF:(none)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SUMMARY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+VT pages loaded:      2/2
+USDA pages with data: 2/2
+
+Bug 1 (USDA domain):   ✅ FIXED
+Bug 2 (USDA data):     ✅ FIXED
+Bug 3 (map detection): ✅ FIXED (exactly 1 map per page, filename starts with "map")
+  Acer rubrum: ✅ 1 map → map.jpg
+  Pinus strobus: ✅ 1 map → map.jpg
+Bug 4 (name cleanup):  ✅ FIXED (no embedded newlines)
+
+✅ All checks passed! Run: node src/scraper.mjs to scrape all 402 species.
