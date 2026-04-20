@@ -1,0 +1,37 @@
+Role & Goal: You are an expert full-stack developer and data engineer. Your task is to build a two-part project:
+
+A web scraper that downloads and carefully organizes plant species data from the Virginia Tech Dendrology site and the USDA PLANTS database.
+
+A static, responsive web application (designed to be hosted on GitHub Pages) that uses this scraped data to help me study and identify tree and shrub species.
+
+Part 1: The Web Scraper
+Please write a scraper (using Node.js with Puppeteer/Playwright OR Python with Playwright/Selenium, as the USDA site uses Angular and loads content dynamically). The scraper must do the following:
+
+Target Sites: Virginia Tech Dendrology and USDA PLANTS database.
+
+File Structure & Organization: Save the scraped data locally first. Create a master folder called Species_Database. Inside, create a subfolder for each species scraped (e.g., Acer_rubrum).
+
+Images & Maps: >     * Scrape all images for the species. Save and rename them sequentially (e.g., Acer_rubrum_1.jpg, Acer_rubrum_2.jpg).
+
+Identify the Habitat Map for each species. On the VT site, this is presented alongside other images. On the USDA site, this is located on the "General" tab. Save this map specifically as species_name_map.jpg (e.g., Acer_rubrum_map.jpg).
+
+Text & Descriptions: >     * Inside each species folder, create a .txt file containing the description of the tree, descriptions/alt-text of the associated images, and descriptive tags (e.g., Deciduous vs Conifer, Native/Planted/Invasive, Tree vs Shrub/Thicket).
+
+USDA "General" Tab Data: >     * Scrape the specific data points from the USDA General tab: Symbol, Group, Duration, Growth Habit, and Native Status. Add this to the text/data file.
+
+Download the "Fact Sheet" and "Plant Guide" PDFs from this page and save them into the species folder.
+
+Data Compilation for Web App: Because static web apps struggle to read thousands of separate .txt files directly, ALSO compile all the scraped text, tags, and filepaths into a single species_data.json file at the root of the Species_Database directory.
+
+Safety/Ethics: Implement randomized time delays (e.g., 2-5 seconds) between page requests to avoid rate limits or IP bans.
+
+Part 2: The Study Web App
+Once the scraping logic is built, build a frontend web application designed to be hosted on GitHub pages (Vanilla HTML/CSS/JS or a static React app).
+
+Functionality: The app should read from the species_data.json file. It must allow me to view the species images, the map, the USDA General info, and the descriptive tags.
+
+Study Features: Include a way to filter by tags (e.g., "Show me all Conifers" or "Show me Shrubs").
+
+Performance: Ensure the app handles paths relative to the generated folder structure so that when I upload the entire Species_Database folder to GitHub Pages, the images and PDFs link properly without needing a backend server.
+
+Please output the plan and code for the scraper first. Once the scraper is ready and running, we will proceed to generating the frontend application code. Do not worry about licensing issues; this is strictly for personal use.

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tree & Shrub Study App</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon">🌳</span>
+        <span class="logo-text">Dendrology Study</span>
+      </div>
+      <div class="header-stats">
+        <span id="species-count">0 species</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="main-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="search-box">
+        <input type="text" id="search-input" placeholder="Search species..." autocomplete="off" />
+        <button id="search-clear" class="clear-btn" title="Clear search">✕</button>
+      </div>
+
+      <div class="filter-section">
+        <h3 class="filter-title">Filter by Tag</h3>
+        <div id="tag-filters" class="tag-filters"></div>
+      </div>
+
+      <div class="filter-section">
+        <h3 class="filter-title">Growth Habit</h3>
+        <div id="habit-filters" class="tag-filters"></div>
+      </div>
+
+      <button id="reset-filters" class="reset-btn">Reset All Filters</button>
+
+      <div class="species-list-header">
+        <span id="filtered-count">Showing all</span>
+      </div>
+      <ul id="species-list" class="species-list"></ul>
+    </aside>
+
+    <!-- Detail Panel -->
+    <main class="detail-panel" id="detail-panel">
+      <div class="welcome-screen" id="welcome-screen">
+        <div class="welcome-icon">🌿</div>
+        <h2>Select a species to study</h2>
+        <p>Use the list and filters on the left to find and explore tree and shrub species.</p>
+        <div class="welcome-tips">
+          <div class="tip">
+            <strong>Search</strong> by common or scientific name
+          </div>
+          <div class="tip">
+            <strong>Filter</strong> by type (Conifer, Deciduous), status (Native, Invasive), or form (Tree, Shrub)
+          </div>
+          <div class="tip">
+            <strong>Study</strong> images, maps, USDA data, and descriptions
+          </div>
+        </div>
+      </div>
+
+      <div class="species-detail" id="species-detail" style="display:none">
+        <div class="detail-header">
+          <div class="detail-names">
+            <h1 id="detail-common-name"></h1>
+            <p class="scientific-name" id="detail-scientific-name"></p>
+            <p class="family-name" id="detail-family"></p>
+          </div>
+          <div id="detail-tags" class="detail-tags"></div>
+        </div>
+
+        <!-- Image Gallery -->
+        <section class="section">
+          <h2 class="section-title">Images</h2>
+          <div class="gallery-layout">
+            <div class="gallery-main">
+              <img id="gallery-main-img" src="" alt="" />
+              <p id="gallery-main-alt" class="img-caption"></p>
+            </div>
+            <div id="gallery-thumbs" class="gallery-thumbs"></div>
+          </div>
+        </section>
+
+        <!-- Map -->
+        <section class="section" id="map-section">
+          <h2 class="section-title">Range / Habitat Map</h2>
+          <div class="map-container">
+            <img id="detail-map" src="" alt="Range map" />
+          </div>
+        </section>
+
+        <!-- USDA Data -->
+        <section class="section">
+          <h2 class="section-title">USDA PLANTS Data</h2>
+          <div class="usda-grid" id="usda-grid"></div>
+        </section>
+
+        <!-- Description -->
+        <section class="section">
+          <h2 class="section-title">Description</h2>
+          <div id="detail-description" class="description-text"></div>
+        </section>
+
+        <!-- PDFs -->
+        <section class="section" id="pdf-section" style="display:none">
+          <h2 class="section-title">Documents</h2>
+          <div id="pdf-links" class="pdf-links"></div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- Flashcard / Quiz Modal -->
+  <div class="modal-overlay" id="quiz-overlay" style="display:none">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2>Quick Quiz</h2>
+        <button class="modal-close" id="quiz-close">✕</button>
+      </div>
+      <div class="quiz-content" id="quiz-content"></div>
+    </div>
+  </div>
+
+  <div class="quiz-fab" id="quiz-fab" title="Start quiz on filtered species" style="display:none">
+    Quiz
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

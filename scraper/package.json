@@ -1,0 +1,13 @@
+{
+  "name": "@workspace/scraper",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "scrape": "node src/scraper.mjs",
+    "test": "node src/test-scrape.mjs"
+  },
+  "dependencies": {
+    "playwright": "^1.49.0"
+  }
+}
