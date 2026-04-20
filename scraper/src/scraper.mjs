@@ -185,8 +185,11 @@ async function scrapeVTSpeciesPage(page, species) {
         let filename = '';
         try { filename = new URL(src).pathname.split('/').pop().toLowerCase(); } catch (_) {}
         const altLower = alt.toLowerCase();
+        // VT alt text is always "{common name} {type} image", so "map image" at the end
+        // is the most precise signal. Filename check catches map.jpg / map1.jpg directly.
         const isMap = /^map\d*\./.test(filename) ||
-          altLower.includes(' map ') || altLower.endsWith(' map') || altLower.includes('range map');
+          altLower.endsWith('map image') ||
+          altLower.endsWith(' map') || altLower.includes('range map');
         return { src, alt, isMap };
       });
 
@@ -198,7 +201,8 @@ async function scrapeVTSpeciesPage(page, species) {
       try { filename = new URL(img.src).pathname.split('/').pop().toLowerCase(); } catch (_) {}
       const altLower = (img.alt || '').toLowerCase();
       return /^map\d*\./.test(filename) ||
-        altLower.includes(' map ') || altLower.endsWith(' map') || altLower.includes('range map');
+        altLower.endsWith('map image') ||
+        altLower.endsWith(' map') || altLower.includes('range map');
     });
     if (mapImg) mapSrc = mapImg.src;
 
