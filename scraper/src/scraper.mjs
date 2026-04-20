@@ -1,6 +1,6 @@
 /**
  * Plant Species Scraper
- * Sources: Virginia Tech Dendrology (syllabus.cfm) + USDA PLANTS database
+ * Sources: Virginia Tech Dendrology (data_results.cfm — full 1,136-species database) + USDA PLANTS database
  * Output: Species_Database/ folder + species_data.json
  *
  * Run: node src/scraper.mjs
@@ -73,53 +73,59 @@ function downloadFile(url, destPath) {
 }
 
 // ─── VT Dendrology: Species List ────────────────────────────────
-async function scrapeVTSpeciesList(page) {
-  console.log('📋 Fetching VT Dendrology species list from syllabus.cfm...');
-  await page.goto('https://dendro.cnre.vt.edu/dendrology/syllabus.cfm', {
-    waitUntil: 'networkidle',
-    timeout: 30000
-  });
-
-  const species = await page.evaluate(() => {
-    const results = [];
-
-    // Collect all unique factsheet IDs. On the syllabus page each species has at
-    // least one link to factsheet.cfm?ID=N (usually the common name). The family and
-    // scientific name links often go to data_results.cfm instead, so we can't rely on
-    // finding all three as factsheet links. We also search nearby <em>/<i> tags since
-    // VT italicises scientific names — that captures binomials not in link text.
-    const idGroups = {};
-    Array.from(document.querySelectorAll('a[href*="factsheet.cfm?ID="]')).forEach(a => {
-      const match = a.href.match(/ID=(\d+)/i);
-      if (!match) return;
-      const id = match[1];
-      if (!idGroups[id]) {
-        idGroups[id] = { url: a.href, texts: [], italics: [] };
-        // Search the nearest table cell / list item / paragraph for italicised text
-        const container = a.closest('td, li, p, div') || a.parentElement;
-        if (container) {
-          container.querySelectorAll('em, i').forEach(em => {
-            const t = em.textContent.replace(/\s+/g, ' ').trim();
-            if (t.length > 2) idGroups[id].italics.push(t);
-          });
-        }
-      }
-      const t = a.textContent.trim();
-      if (t && t.length > 1) idGroups[id].texts.push(t);
+// Fetch HTML via HTTP POST — returns a Promise<string>
+function httpPost(urlStr, postBody) {
+  return new Promise((resolve, reject) => {
+    const url = new URL(urlStr);
+    const bodyBuf = Buffer.from(postBody, 'utf8');
+    const opts = {
+      hostname: url.hostname,
+      path: url.pathname + url.search,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Length': bodyBuf.length,
+        'User-Agent': 'Mozilla/5.0 (compatible; dendro-scraper/1.0)'
+      },
+      timeout: 30000
+    };
+    const req = https.request(opts, res => {
+      const chunks = [];
+      res.on('data', c => chunks.push(c));
+      res.on('end', () => resolve(Buffer.concat(chunks).toString('latin1')));
     });
-
-    Object.entries(idGroups).forEach(([id, group]) => {
-      // Scientific name: check link texts first, then nearby italicised text
-      const isBinomial = t => /^[A-Z][a-z]+ [a-z]/.test(t);
-      let scientific = group.texts.find(isBinomial) || group.italics.find(isBinomial) || '';
-      // Common name: non-family, non-scientific text (will be overridden by factsheet page data)
-      const common = group.texts.find(t => t !== scientific && !/[a-z]aceae$/i.test(t)) || '';
-      // Always include ALL found IDs — scientific name confirmed from factsheet page if still empty
-      results.push({ id, scientific, common, url: group.url });
-    });
-
-    return results;
+    req.on('error', reject);
+    req.on('timeout', () => { req.destroy(); reject(new Error('POST timeout')); });
+    req.write(bodyBuf);
+    req.end();
   });
+}
+
+async function scrapeVTSpeciesList() {
+  console.log('📋 Fetching full VT Dendrology species list from data_results.cfm...');
+
+  // A blank POST returns all 1,136 species — no browser / Playwright needed.
+  const postBody = 'family=Select+a+Family&genus=&species=&commonname=&symbol=&growthhabit=Select+Growth+Habit';
+  const html = await httpPost(
+    'https://dendro.cnre.vt.edu/dendrology/data_results.cfm',
+    postBody
+  );
+
+  // Each entry in the server-rendered response looks like:
+  //   <a href="syllabus/factsheet.cfm?ID=417"><em>Abelia xgrandiflora</em> - glossy abelia</a>
+  const VT_BASE = 'https://dendro.cnre.vt.edu/dendrology/';
+  const entryRe = /href="(syllabus\/factsheet\.cfm\?ID=(\d+))"[^>]*><em>([^<]+)<\/em>\s*-\s*([^<]+)<\/a>/gi;
+  const species = [];
+  let m;
+  while ((m = entryRe.exec(html)) !== null) {
+    const [, relHref, id, scientific, common] = m;
+    species.push({
+      id,
+      scientific: scientific.trim(),
+      common: common.trim(),
+      url: VT_BASE + relHref
+    });
+  }
 
   console.log(`  Found ${species.length} species on VT Dendrology`);
   return species;
@@ -307,7 +313,10 @@ async function extractUSDAPageData(page, sciName) {
 
 async function scrapeUSDASpecies(page, scientificName) {
   console.log(`  🌱 USDA: searching for ${scientificName}...`);
-  const nameParts = scientificName.trim().split(/\s+/);
+  // Strip hybrid × (U+00D7) and any leading non-alpha chars from each part so that
+  // names like "Abelia ×grandiflora" produce the correct symbol candidates (ABGR).
+  const cleanedName = scientificName.replace(/[×x]\s*/gi, '').trim();
+  const nameParts = cleanedName.split(/\s+/);
 
   // Generate candidate USDA symbols to try (most common patterns)
   const genus = nameParts[0] || '';
@@ -543,7 +552,7 @@ async function main() {
     await usdaPage.setExtraHTTPHeaders(headers);
 
     // Get species list
-    let speciesList = await scrapeVTSpeciesList(vtPage);
+    let speciesList = await scrapeVTSpeciesList();
     await delay(2000, 3000);
 
     if (speciesList.length === 0) {
