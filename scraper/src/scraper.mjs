@@ -9,6 +9,7 @@
 import { chromium } from 'playwright';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import https from 'https';
 import http from 'http';
 import { pipeline } from 'stream/promises';
@@ -330,6 +331,38 @@ async function fetchUSDADataFromAPI(symbol, sciName) {
   }
 }
 
+/**
+ * Derive USDA symbol candidates from a scientific name, normalising both the
+ * Unicode hybrid marker (×) and the ASCII leading-x form (e.g. xgrandiflora).
+ * Exported so test-scrape.mjs can exercise this exact logic rather than
+ * duplicating it.
+ *
+ * Examples:
+ *   "Abelia ×grandiflora"  →  ["ABGR", "ABEL", "ABEG", "ABGR2", ...]
+ *   "Abelia xgrandiflora"  →  ["ABGR", "ABEL", "ABEG", "ABGR2", ...]
+ *   "Acer rubrum"          →  ["ACRU", "ACER", "ACRU2", ...]
+ */
+export function deriveSymbolCandidates(scientificName) {
+  const nameParts = scientificName
+    .replace(/×/g, '')
+    .split(/\s+/)
+    .filter(p => p.length > 0)
+    .map(p => p.replace(/^x([a-z])/, '$1'))
+    .filter(p => p !== 'x' && p.length > 0);
+  const genus   = nameParts[0] || '';
+  const epithet = nameParts[1] || '';
+  const baseCandidates = [
+    (genus.slice(0, 2) + epithet.slice(0, 2)).toUpperCase(),
+    (genus.slice(0, 4)).toUpperCase(),
+    (genus.slice(0, 3) + epithet.slice(0, 1)).toUpperCase(),
+  ];
+  const candidates = [...baseCandidates];
+  for (const base of baseCandidates) {
+    for (let n = 2; n <= 7; n++) candidates.push(base + n);
+  }
+  return [...new Set(candidates)].filter(s => s && s.length >= 2);
+}
+
 // Try the symbol extracted from the VT page first, then fall back to guessing.
 // `page` is still accepted so the browser-based map-image path can be preserved
 // in saveSpeciesFiles, but we no longer hit the USDA Angular app for core data.
@@ -348,25 +381,9 @@ async function scrapeUSDASpecies(page, scientificName, vtSymbol = '') {
   // 2. Generate candidate symbols and try each via the fast REST API.
   // Normalise hybrid markers so names like "Abelia xgrandiflora" or "Abelia ×grandiflora"
   // produce the correct symbol candidates (ABGR).
-  const nameParts = scientificName
-    .replace(/×/g, '')
-    .split(/\s+/)
-    .filter(p => p.length > 0)
-    .map(p => p.replace(/^x([a-z])/, '$1'))
-    .filter(p => p !== 'x' && p.length > 0);
-  const genus   = nameParts[0] || '';
-  const epithet = nameParts[1] || '';
-  const baseCandidates = [
-    (genus.slice(0, 2) + epithet.slice(0, 2)).toUpperCase(),
-    (genus.slice(0, 4)).toUpperCase(),
-    (genus.slice(0, 3) + epithet.slice(0, 1)).toUpperCase(),
-  ];
-  const candidates = [...baseCandidates];
-  for (const base of baseCandidates) {
-    for (let n = 2; n <= 7; n++) candidates.push(base + n);
-  }
+  const candidates = deriveSymbolCandidates(scientificName);
 
-  for (const sym of [...new Set(candidates)]) {
+  for (const sym of candidates) {
     if (!sym || sym.length < 2 || sym === vtSymbol) continue;
     await delay(150, 400);
     const result = await fetchUSDADataFromAPI(sym, scientificName);
@@ -638,7 +655,12 @@ async function main() {
   console.log('Enable GitHub Pages → your study app will be live!');
 }
 
-main().catch(err => {
-  console.error('Fatal error:', err);
-  process.exit(1);
-});
+// Only run when executed directly (node src/scraper.mjs), not when imported.
+const isMain = process.argv[1] &&
+  fileURLToPath(import.meta.url) === path.resolve(process.argv[1]);
+if (isMain) {
+  main().catch(err => {
+    console.error('Fatal error:', err);
+    process.exit(1);
+  });
+}
