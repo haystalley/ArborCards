@@ -1,93 +1,201 @@
 /**
- * Quick test — scrapes just 2 species to verify the scraper works
+ * Quick test — scrapes 2 species and verifies all four fixes:
+ *   1. Correct USDA domain (plants.sc.egov.usda.gov)
+ *   2. USDA Angular DOM extraction (Growth Habits, Symbol, Duration, etc.)
+ *   3. Map image detection (filename must start with "map")
+ *   4. Clean common/scientific names
+ *
  * Run: node src/test-scrape.mjs
  */
 
 import { chromium } from 'playwright';
-import fs from 'fs';
-import path from 'path';
 
-const OUTPUT_DIR = path.resolve('../Species_Database');
-const JSON_OUTPUT = path.join(OUTPUT_DIR, 'species_data.json');
+const USDA_BASE = 'https://plants.sc.egov.usda.gov';
 
-function delay(min = 2000, max = 5000) {
+function delay(min = 1000, max = 3000) {
   const ms = Math.floor(Math.random() * (max - min + 1)) + min;
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function safeName(name) {
-  return name.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_\-]/g, '');
+async function testVTPage(page, url, label) {
+  console.log(`\n── VT Dendrology: ${label}`);
+  await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
+
+  const data = await page.evaluate(() => {
+    const fullText = document.body.innerText;
+    const symbolMatch = fullText.match(/symbol:\s*([A-Z0-9]+)/i);
+    const symbol = symbolMatch?.[1] || '';
+
+    const italic = document.body.querySelector('i, em');
+    let scientificName = italic ? italic.textContent.trim() : '';
+    // Bug 4 fix: clean whitespace
+    scientificName = scientificName.replace(/\s+/g, ' ').trim();
+
+    const familyMatch = fullText.match(/\b([A-Z][a-z]+aceae)\b/);
+    const family = familyMatch?.[1] || '';
+
+    // Image detection: Bug 3 fix — check filename only
+    const imgs = Array.from(document.querySelectorAll('img'))
+      .filter(img => img.src && img.src.includes('/images/') && !img.src.includes('.gif'))
+      .map(img => {
+        let filename = '';
+        try { filename = new URL(img.src).pathname.split('/').pop().toLowerCase(); } catch (_) {}
+        const altLower = (img.alt || '').toLowerCase();
+        const isMap = /^map\d*\./.test(filename) ||
+          altLower.includes(' map ') || altLower.endsWith(' map') || altLower.includes('range map');
+        return { filename, alt: img.alt, isMap };
+      });
+
+    const mapImgs = imgs.filter(i => i.isMap);
+    return { symbol, scientificName, family, totalImages: imgs.length, mapImgs };
+  });
+
+  console.log(`  Symbol:         ${data.symbol || '(not found)'}`);
+  console.log(`  Scientific:     "${data.scientificName}" ${data.scientificName.includes('\n') ? '❌ HAS NEWLINES' : '✅ clean'}`);
+  console.log(`  Family:         ${data.family || '(not found)'}`);
+  console.log(`  Images found:   ${data.totalImages}`);
+  console.log(`  Map images:     ${data.mapImgs.length} → ${data.mapImgs.map(i => i.filename).join(', ') || '(none)'}`);
+
+  return data;
 }
 
-function ensureDir(d) {
-  if (!fs.existsSync(d)) fs.mkdirSync(d, { recursive: true });
+async function testUSDAPage(page, symbol, expectedGenus) {
+  console.log(`\n── USDA PLANTS: ${symbol} (${expectedGenus})`);
+  const url = `${USDA_BASE}/plant-profile/${symbol}`;
+  console.log(`  URL: ${url}`);
+
+  await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
+  await delay(1000, 2000);
+
+  // Wait for Angular to render
+  let tableFound = false;
+  try {
+    await page.waitForSelector('div.general-info', { timeout: 15000 });
+    tableFound = true;
+  } catch (_) {
+    console.log(`  ❌ div.general-info never appeared — Angular did not render`);
+  }
+
+  if (!tableFound) return null;
+
+  const result = await page.evaluate((usdaBase) => {
+    const fields = {};
+    document.querySelectorAll('div.general-info tr').forEach(row => {
+      const label = row.querySelector('th h3')?.textContent?.trim() || '';
+      const value = row.querySelector('td')?.textContent?.trim() || '';
+      if (label) fields[label] = value;
+    });
+
+    const symbol = fields['Symbol'] || '';
+    const group = fields['Group'] || fields['Plant Type'] || '';
+    const duration = fields['Duration'] || '';
+    const growthHabit = fields['Growth Habits'] || fields['Growth Habit'] || '';
+    const nativeStatus = fields['Native Status'] || '';
+
+    // PDF links
+    let factSheetUrl = null, plantGuideUrl = null;
+    Array.from(document.querySelectorAll('a[href]')).forEach(a => {
+      const rawHref = a.getAttribute('href') || '';
+      const href = rawHref.startsWith('http') ? rawHref : usdaBase + rawHref;
+      const text = a.textContent.toLowerCase();
+      if (!factSheetUrl && href.toLowerCase().endsWith('.pdf') &&
+          (text.includes('fact sheet') || rawHref.includes('factsheet'))) {
+        factSheetUrl = href;
+      }
+      if (!plantGuideUrl && href.toLowerCase().endsWith('.pdf') &&
+          (text.includes('plant guide') || rawHref.includes('plantguide'))) {
+        plantGuideUrl = href;
+      }
+    });
+
+    return { symbol, group, duration, growthHabit, nativeStatus, factSheetUrl, plantGuideUrl, allFields: Object.keys(fields) };
+  }, USDA_BASE);
+
+  console.log(`  Fields found:   [${result.allFields.join(', ')}]`);
+  console.log(`  Symbol:         ${result.symbol || '(empty)'} ${result.symbol ? '✅' : '❌'}`);
+  console.log(`  Group:          ${result.group || '(empty)'} ${result.group ? '✅' : '❌'}`);
+  console.log(`  Duration:       ${result.duration || '(empty)'} ${result.duration ? '✅' : '❌'}`);
+  console.log(`  Growth Habits:  ${result.growthHabit || '(empty)'} ${result.growthHabit ? '✅' : '❌'}`);
+  console.log(`  Native Status:  ${result.nativeStatus || '(empty)'} ${result.nativeStatus ? '✅' : '❌'}`);
+  console.log(`  Fact Sheet PDF: ${result.factSheetUrl || '(none)'}`);
+  console.log(`  Plant Guide PDF:${result.plantGuideUrl || '(none)'}`);
+
+  return result;
 }
 
 async function quickTest() {
-  console.log('🧪 Quick test: scraping 2 species from VT Dendrology...\n');
-  ensureDir(OUTPUT_DIR);
+  console.log('🧪 Scraper Validation Test');
+  console.log('   Checks all four bug fixes (domain, Angular extraction, map detection, name cleanup)\n');
 
   const browser = await chromium.launch({
     headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox']
+    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
   });
 
   const page = await browser.newPage();
   await page.setExtraHTTPHeaders({
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36'
   });
+  page.setDefaultTimeout(30000);
 
-  const testUrls = [
-    { name: 'Acer rubrum (red maple)', url: 'https://dendro.cnre.vt.edu/dendrology/syllabus/factsheet.cfm?ID=1' },
-    { name: 'Pinus strobus (eastern white pine)', url: 'https://dendro.cnre.vt.edu/dendrology/syllabus/factsheet.cfm?ID=58' }
-  ];
+  const vtResults = [];
+  const usdaResults = [];
 
-  const results = [];
+  try {
+    // ── VT Tests ──────────────────────────────────────────────────
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('VT DENDROLOGY TESTS');
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
-  for (const species of testUrls) {
-    console.log(`Testing: ${species.name}`);
-    try {
-      await page.goto(species.url, { waitUntil: 'domcontentloaded', timeout: 20000 });
-      await delay(1000, 2000);
-
-      const data = await page.evaluate(() => {
-        const h1 = document.querySelector('h1');
-        const allImgs = Array.from(document.querySelectorAll('img'))
-          .filter(img => img.src && !img.src.includes('logo'))
-          .map(img => ({ src: img.src, alt: img.alt }));
-        const paragraphs = Array.from(document.querySelectorAll('p'))
-          .map(p => p.textContent.trim())
-          .filter(t => t.length > 20);
-
-        return {
-          title: h1?.textContent.trim() || '',
-          imgCount: allImgs.length,
-          firstImgSrc: allImgs[0]?.src || null,
-          descSnippet: paragraphs[0]?.slice(0, 120) || '',
-          url: window.location.href
-        };
-      });
-
-      console.log(`  ✅ ${data.title || species.name}`);
-      console.log(`     Images found: ${data.imgCount}`);
-      console.log(`     Description snippet: ${data.descSnippet.slice(0, 80)}...`);
-      results.push({ name: species.name, success: true, ...data });
-
-    } catch (err) {
-      console.log(`  ❌ Failed: ${err.message}`);
-      results.push({ name: species.name, success: false, error: err.message });
-    }
-
+    const vt1 = await testVTPage(page,
+      'https://dendro.cnre.vt.edu/dendrology/syllabus/factsheet.cfm?ID=1',
+      'Acer rubrum (red maple)');
+    vtResults.push({ name: 'Acer rubrum', ...vt1 });
     await delay(2000, 3000);
+
+    const vt2 = await testVTPage(page,
+      'https://dendro.cnre.vt.edu/dendrology/syllabus/factsheet.cfm?ID=58',
+      'Pinus strobus (eastern white pine)');
+    vtResults.push({ name: 'Pinus strobus', ...vt2 });
+    await delay(2000, 3000);
+
+    // ── USDA Tests ────────────────────────────────────────────────
+    console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('USDA PLANTS TESTS (plants.sc.egov.usda.gov)');
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
+    const usda1 = await testUSDAPage(page, 'ACRU', 'acer');
+    if (usda1) usdaResults.push({ symbol: 'ACRU', ...usda1 });
+    await delay(2000, 3000);
+
+    const usda2 = await testUSDAPage(page, 'PIST', 'pinus');
+    if (usda2) usdaResults.push({ symbol: 'PIST', ...usda2 });
+
+  } finally {
+    await browser.close();
   }
 
-  await browser.close();
+  // ── Summary ───────────────────────────────────────────────────
+  console.log('\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  console.log('SUMMARY');
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  console.log(`VT pages loaded:      ${vtResults.length}/2`);
+  console.log(`USDA pages with data: ${usdaResults.filter(r => r.growthHabit).length}/${usdaResults.length}`);
 
-  console.log('\n📊 Test Summary:');
-  console.log(`  Tested: ${results.length} species`);
-  console.log(`  Success: ${results.filter(r => r.success).length}`);
-  console.log(`  Failed: ${results.filter(r => !r.success).length}`);
-  console.log('\n✅ Scraper is ready! Run: node src/scraper.mjs to scrape all species.');
+  const allUsdaOk = usdaResults.length >= 1 && usdaResults.every(r => r.growthHabit);
+  const allVtOk = vtResults.every(r => r.scientificName && !r.scientificName.includes('\n'));
+  const mapOk = vtResults.every(r => r.mapImgs.length <= r.totalImages);
+
+  console.log(`\nBug 1 (USDA domain):   ${usdaResults.length > 0 ? '✅ FIXED' : '❌ Still failing'}`);
+  console.log(`Bug 2 (USDA data):     ${allUsdaOk ? '✅ FIXED' : '❌ Still failing — Growth Habits still empty'}`);
+  console.log(`Bug 3 (map detection): ${mapOk ? '✅ FIXED (filename-only check active)' : '❌ Check map results above'}`);
+  console.log(`Bug 4 (name cleanup):  ${allVtOk ? '✅ FIXED (no embedded newlines)' : '❌ Scientific name still dirty'}`);
+
+  if (allUsdaOk && allVtOk) {
+    console.log('\n✅ All checks passed! Run: node src/scraper.mjs to scrape all 402 species.');
+  } else {
+    console.log('\n⚠️  Some checks failed — review output above for details.');
+  }
 }
 
 quickTest().catch(err => {

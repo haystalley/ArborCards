@@ -180,36 +180,111 @@ async function scrapeVTSpeciesPage(page, species) {
       .map(img => {
         const src = img.src;
         const alt = img.alt || '';
-        const isMap = alt.toLowerCase().includes('map') || alt.toLowerCase().includes('range') ||
-          src.toLowerCase().includes('map') || src.toLowerCase().includes('range');
+        // Only flag as map if the filename itself starts with "map" (VT names them map1.jpg, map2.jpg, etc.)
+        // Avoid matching images that merely have "map" somewhere in the folder path
+        let filename = '';
+        try { filename = new URL(src).pathname.split('/').pop().toLowerCase(); } catch (_) {}
+        const altLower = alt.toLowerCase();
+        const isMap = /^map\d*\./.test(filename) ||
+          altLower.includes(' map ') || altLower.endsWith(' map') || altLower.includes('range map');
         return { src, alt, isMap };
       });
 
-    // Also look for a range/map image specifically
+    // Also look for a range/map image specifically (filename-based check)
     let mapSrc = null;
-    const mapImg = document.querySelector('img[alt*="range" i], img[alt*="map" i], img[src*="range"], img[src*="map"]');
+    const allImgs = Array.from(document.querySelectorAll('img'));
+    const mapImg = allImgs.find(img => {
+      let filename = '';
+      try { filename = new URL(img.src).pathname.split('/').pop().toLowerCase(); } catch (_) {}
+      const altLower = (img.alt || '').toLowerCase();
+      return /^map\d*\./.test(filename) || altLower.includes('range map');
+    });
     if (mapImg) mapSrc = mapImg.src;
 
     return { commonName, scientificName, family, symbol, description, tags: [...new Set(tags)], images: imgs, mapSrc };
   });
 
+  // Clean up scientific name (italic element may contain embedded newlines/spaces)
+  const cleanScientific = (data.scientificName || scientific).replace(/\s+/g, ' ').trim();
+
   return {
     folderName: safeName(scientific.split(' ').slice(0, 2).join('_')),
     data: {
       ...data,
-      commonName: data.commonName || common,
-      scientificName: data.scientificName || scientific,
+      // Use the common name from the syllabus list (already correct); page extraction gets the whole first line
+      commonName: common,
+      scientificName: cleanScientific,
       vtId: id
     }
   };
 }
 
 // ─── USDA PLANTS: Species Data ───────────────────────────────────
+const USDA_BASE = 'https://plants.sc.egov.usda.gov';
+
+async function extractUSDAPageData(page, sciName) {
+  // Wait for Angular to render the general-info table before reading
+  try {
+    await page.waitForSelector('div.general-info', { timeout: 15000 });
+  } catch (_) {
+    // Page loaded but Angular table never appeared — probably wrong species
+    return null;
+  }
+
+  return page.evaluate((sciName, usdaBase) => {
+    // Verify this page is actually for the right genus at minimum
+    const pageText = document.body.innerText.toLowerCase();
+    const genus = sciName.toLowerCase().split(' ')[0];
+    if (!pageText.includes(genus)) return null;
+
+    // Read the general-info table: <tr><th><h3>Label</h3></th><td>...<span>Value</span>...</td></tr>
+    const fields = {};
+    document.querySelectorAll('div.general-info tr').forEach(row => {
+      const label = row.querySelector('th h3')?.textContent?.trim() || '';
+      const value = row.querySelector('td')?.textContent?.trim() || '';
+      if (label) fields[label] = value;
+    });
+
+    const symbol = fields['Symbol'] || fields['symbol'] || '';
+    const group = fields['Group'] || fields['Plant Type'] || '';
+    const duration = fields['Duration'] || '';
+    // Field is "Growth Habits" (plural) on the Angular page
+    const growthHabit = fields['Growth Habits'] || fields['Growth Habit'] || '';
+    const nativeStatus = fields['Native Status'] || '';
+
+    // PDF links — hrefs are relative, prepend domain
+    let factSheetUrl = null, plantGuideUrl = null;
+    Array.from(document.querySelectorAll('a[href]')).forEach(a => {
+      const rawHref = a.getAttribute('href') || '';
+      const href = rawHref.startsWith('http') ? rawHref : usdaBase + rawHref;
+      const text = a.textContent.toLowerCase();
+      if (!factSheetUrl && href.toLowerCase().endsWith('.pdf') &&
+          (text.includes('fact sheet') || rawHref.includes('factsheet') || rawHref.includes('fact_sheet'))) {
+        factSheetUrl = href;
+      }
+      if (!plantGuideUrl && href.toLowerCase().endsWith('.pdf') &&
+          (text.includes('plant guide') || rawHref.includes('plantguide') || rawHref.includes('plant_guide'))) {
+        plantGuideUrl = href;
+      }
+    });
+
+    // Distribution map image
+    let mapImageUrl = null;
+    const mapImg = document.querySelector('img[alt*="distribution" i], img[alt*="range" i], img[src*="distribution"]');
+    if (mapImg) {
+      const raw = mapImg.getAttribute('src') || '';
+      mapImageUrl = raw.startsWith('http') ? raw : usdaBase + raw;
+    }
+
+    return { symbol, group, duration, growthHabit, nativeStatus, factSheetUrl, plantGuideUrl, mapImageUrl };
+  }, sciName, USDA_BASE);
+}
+
 async function scrapeUSDASpecies(page, scientificName) {
   console.log(`  🌱 USDA: searching for ${scientificName}...`);
   const nameParts = scientificName.trim().split(/\s+/);
 
-  // Generate candidate symbols to try
+  // Generate candidate USDA symbols to try (most common patterns)
   const genus = nameParts[0] || '';
   const epithet = nameParts[1] || '';
   const candidates = [
@@ -222,91 +297,45 @@ async function scrapeUSDASpecies(page, scientificName) {
   for (const sym of [...new Set(candidates)]) {
     if (!sym || sym.length < 2) continue;
     try {
-      const profileUrl = `https://plants.usda.gov/home/plantProfile?symbol=${sym}`;
-      await page.goto(profileUrl, { waitUntil: 'networkidle', timeout: 20000 });
-      await delay(1500, 2500);
+      // Correct URL: plants.sc.egov.usda.gov/plant-profile/SYMBOL
+      const profileUrl = `${USDA_BASE}/plant-profile/${sym}`;
+      await page.goto(profileUrl, { waitUntil: 'networkidle', timeout: 25000 });
+      await delay(1000, 2000);
 
-      const result = await page.evaluate((sciName) => {
-        const body = document.body.innerText;
+      const result = await extractUSDAPageData(page, scientificName);
 
-        // Check if this is actually the right species
-        const nameParts = sciName.toLowerCase().split(' ');
-        if (!body.toLowerCase().includes(nameParts[0])) return null;
-
-        // Extract data fields
-        const getField = (pattern) => {
-          const m = body.match(pattern);
-          return m?.[1]?.trim() || '';
-        };
-
-        const symbol = getField(/Symbol:\s*([A-Z0-9]+)/);
-        const group = getField(/Group:\s*([^\n]+)/);
-        const duration = getField(/Duration:\s*([^\n]+)/);
-        const growthHabit = getField(/Growth Habit:\s*([^\n]+)/);
-        const nativeStatus = getField(/Native Status:\s*([^\n]+)/);
-
-        // PDFs
-        let factSheetUrl = null, plantGuideUrl = null;
-        Array.from(document.querySelectorAll('a[href]')).forEach(a => {
-          const href = a.href || '';
-          const text = a.textContent.toLowerCase();
-          if (!factSheetUrl && (text.includes('fact sheet') || href.includes('fact_sheet')) && href.endsWith('.pdf')) {
-            factSheetUrl = href;
-          }
-          if (!plantGuideUrl && (text.includes('plant guide') || href.includes('plant_guide')) && href.endsWith('.pdf')) {
-            plantGuideUrl = href;
-          }
-        });
-
-        // Map image from the General tab
-        let mapImageUrl = null;
-        const mapImg = document.querySelector(
-          'img[src*="map"], img[alt*="map" i], img[alt*="range" i], img[src*="distribution"]'
-        );
-        if (mapImg) mapImageUrl = mapImg.src;
-
-        return { symbol, group, duration, growthHabit, nativeStatus, factSheetUrl, plantGuideUrl, mapImageUrl };
-      }, scientificName);
-
-      if (result && (result.symbol || result.group)) {
+      if (result && (result.symbol || result.group || result.growthHabit)) {
         console.log(`    ✓ USDA found: symbol=${result.symbol}, habit=${result.growthHabit}`);
         return result;
       }
     } catch (e) {
-      // try next candidate
+      // try next candidate symbol
     }
-    await delay(1000, 2000);
+    await delay(800, 1500);
   }
 
-  // If symbol approach fails, try search
+  // Fallback: search by scientific name
   try {
-    const searchUrl = `https://plants.usda.gov/home/search?term=${encodeURIComponent(scientificName)}&columns=Symbol,Scientific_Name,Common_Name`;
-    await page.goto(searchUrl, { waitUntil: 'networkidle', timeout: 20000 });
+    const searchUrl = `${USDA_BASE}/home/search?term=${encodeURIComponent(scientificName)}&columns=Symbol,Scientific_Name,Common_Name`;
+    await page.goto(searchUrl, { waitUntil: 'networkidle', timeout: 25000 });
     await delay(2000, 3000);
 
-    const firstResult = await page.evaluate(() => {
-      const link = document.querySelector('a[href*="plantProfile"]');
-      return link?.href || null;
-    });
+    // Find a link to a plant profile in the search results
+    const profileHref = await page.evaluate((base) => {
+      const link = document.querySelector(`a[href*="/plant-profile/"]`);
+      if (!link) return null;
+      const raw = link.getAttribute('href') || '';
+      return raw.startsWith('http') ? raw : base + raw;
+    }, USDA_BASE);
 
-    if (firstResult) {
-      await page.goto(firstResult, { waitUntil: 'networkidle', timeout: 20000 });
-      await delay(1500, 2500);
-      const result = await page.evaluate(() => {
-        const body = document.body.innerText;
-        const getField = (p) => body.match(p)?.[1]?.trim() || '';
-        return {
-          symbol: getField(/Symbol:\s*([A-Z0-9]+)/),
-          group: getField(/Group:\s*([^\n]+)/),
-          duration: getField(/Duration:\s*([^\n]+)/),
-          growthHabit: getField(/Growth Habit:\s*([^\n]+)/),
-          nativeStatus: getField(/Native Status:\s*([^\n]+)/),
-          factSheetUrl: null,
-          plantGuideUrl: null,
-          mapImageUrl: null
-        };
-      });
-      if (result.symbol) return result;
+    if (profileHref) {
+      await page.goto(profileHref, { waitUntil: 'networkidle', timeout: 25000 });
+      await delay(1000, 2000);
+      const result = await extractUSDAPageData(page, scientificName);
+      if (result && (result.symbol || result.growthHabit)) {
+        console.log(`    ✓ USDA found via search: symbol=${result.symbol}`);
+        return result;
+      }
     }
   } catch (e) {
     // search fallback failed
