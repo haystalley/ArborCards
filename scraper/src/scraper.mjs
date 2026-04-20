@@ -320,7 +320,14 @@ async function scrapeUSDASpecies(page, scientificName) {
   // Fallback: search by scientific name
   try {
     const searchUrl = `${USDA_BASE}/home/search?term=${encodeURIComponent(scientificName)}&columns=Symbol,Scientific_Name,Common_Name`;
-    await page.goto(searchUrl, { waitUntil: 'domcontentloaded', timeout: 25000 });
+    // networkidle preferred for search so results have time to load; if it times out the
+    // page content may still be usable, so catch timeout and continue rather than abort.
+    try {
+      await page.goto(searchUrl, { waitUntil: 'networkidle', timeout: 25000 });
+    } catch (e) {
+      if (e.name !== 'TimeoutError' && !e.message.includes('Timeout')) throw e;
+      // Timed out waiting for idle — page content may already be rendered; continue
+    }
     await delay(2000, 3000);
 
     // Find a link to a plant profile in the search results
