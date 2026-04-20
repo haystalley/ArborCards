@@ -251,7 +251,7 @@ async function extractUSDAPageData(page, sciName) {
     const duration = fields['Duration'] || '';
     // Field is "Growth Habits" (plural) on the Angular page
     const growthHabit = fields['Growth Habits'] || fields['Growth Habit'] || '';
-    const nativeStatus = fields['Native Status'] || '';
+    const nativeStatus = (fields['Native Status'] || '').replace(/\s+/g, ' ').trim();
 
     // PDF links — hrefs are relative, prepend domain
     let factSheetUrl = null, plantGuideUrl = null;
