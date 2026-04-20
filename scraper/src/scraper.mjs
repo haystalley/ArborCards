@@ -81,28 +81,41 @@ async function scrapeVTSpeciesList(page) {
   });
 
   const species = await page.evaluate(() => {
-    const seen = new Set();
     const results = [];
 
-    // Links follow pattern: factsheet.cfm?ID=N (repeated 3 times per species: family, scientific, common)
-    // We collect unique IDs and pair scientific name with URL
+    // Collect all unique factsheet IDs. On the syllabus page each species has at
+    // least one link to factsheet.cfm?ID=N (usually the common name). The family and
+    // scientific name links often go to data_results.cfm instead, so we can't rely on
+    // finding all three as factsheet links. We also search nearby <em>/<i> tags since
+    // VT italicises scientific names — that captures binomials not in link text.
     const idGroups = {};
     Array.from(document.querySelectorAll('a[href*="factsheet.cfm?ID="]')).forEach(a => {
-      const match = a.href.match(/ID=(\d+)/);
+      const match = a.href.match(/ID=(\d+)/i);
       if (!match) return;
       const id = match[1];
-      if (!idGroups[id]) idGroups[id] = { url: a.href, texts: [] };
+      if (!idGroups[id]) {
+        idGroups[id] = { url: a.href, texts: [], italics: [] };
+        // Search the nearest table cell / list item / paragraph for italicised text
+        const container = a.closest('td, li, p, div') || a.parentElement;
+        if (container) {
+          container.querySelectorAll('em, i').forEach(em => {
+            const t = em.textContent.replace(/\s+/g, ' ').trim();
+            if (t.length > 2) idGroups[id].italics.push(t);
+          });
+        }
+      }
       const t = a.textContent.trim();
       if (t && t.length > 1) idGroups[id].texts.push(t);
     });
 
     Object.entries(idGroups).forEach(([id, group]) => {
-      // Texts order: Family, Scientific Name, Common Name
-      const scientific = group.texts.find(t => /^[A-Z][a-z]+ [a-z]/.test(t)) || '';
-      const common = group.texts.find(t => t !== scientific && !/aceae$|ceae$/.test(t)) || scientific;
-      if (scientific) {
-        results.push({ id, scientific, common, url: group.url });
-      }
+      // Scientific name: check link texts first, then nearby italicised text
+      const isBinomial = t => /^[A-Z][a-z]+ [a-z]/.test(t);
+      let scientific = group.texts.find(isBinomial) || group.italics.find(isBinomial) || '';
+      // Common name: non-family, non-scientific text (will be overridden by factsheet page data)
+      const common = group.texts.find(t => t !== scientific && !/[a-z]aceae$/i.test(t)) || '';
+      // Always include ALL found IDs — scientific name confirmed from factsheet page if still empty
+      results.push({ id, scientific, common, url: group.url });
     });
 
     return results;
@@ -212,12 +225,19 @@ async function scrapeVTSpeciesPage(page, species) {
   // Clean up scientific name (italic element may contain embedded newlines/spaces)
   const cleanScientific = (data.scientificName || scientific).replace(/\s+/g, ' ').trim();
 
+  // Derive folder name from the factsheet scientific name (reliable) rather than
+  // the syllabus link text (often missing for species where only the common name
+  // links to factsheet.cfm). Fall back to vtid_N if we still have nothing.
+  const folderName = cleanScientific
+    ? safeName(cleanScientific.split(' ').slice(0, 2).join('_'))
+    : `vtid_${id}`;
+
   return {
-    folderName: safeName(scientific.split(' ').slice(0, 2).join('_')),
+    folderName,
     data: {
       ...data,
-      // Use the common name from the syllabus list (already correct); page extraction gets the whole first line
-      commonName: common,
+      // Common name: syllabus value is already correct; page extraction gets the whole first line
+      commonName: common || data.commonName,
       scientificName: cleanScientific,
       vtId: id
     }
@@ -531,10 +551,16 @@ async function main() {
       process.exit(1);
     }
 
-    // Skip already scraped (resume capability)
+    // Skip already scraped (resume capability).
+    // A species is only skipped if it's in the JSON AND its folder still exists on disk.
+    // If the folder was deleted, it will be re-scraped regardless of the JSON entry.
     const toScrape = speciesList.filter(s => {
-      const id = safeName(s.scientific.split(' ').slice(0, 2).join('_'));
-      return !alreadyScraped.has(id);
+      const candidate = s.scientific
+        ? safeName(s.scientific.split(' ').slice(0, 2).join('_'))
+        : '';
+      if (!candidate || !alreadyScraped.has(candidate)) return true;
+      // Entry is in JSON — only skip if the folder is still present
+      return !fs.existsSync(path.join(OUTPUT_DIR, candidate));
     });
 
     console.log(`\n🌳 Processing ${toScrape.length} species (${alreadyScraped.size} already done)...\n`);
