@@ -367,6 +367,7 @@ async function saveSpeciesFiles(folderName, vtData, usdaData) {
   const savedImages = [];
   let mapFileName = null;
   let imgCount = 1;
+  const usedDescriptors = {}; // track per-descriptor count to avoid duplicate filenames
 
   for (const img of vtData.images || []) {
     if (!img.src || img.src.startsWith('data:')) continue;
@@ -381,8 +382,21 @@ async function saveSpeciesFiles(folderName, vtData, usdaData) {
       fileName = `${folderName}_map${ext}`;
       mapFileName = fileName;
     } else {
-      fileName = `${folderName}_${imgCount}${ext}`;
-      imgCount++;
+      // Extract descriptor from VT alt text: "{common name} {descriptor} image"
+      // e.g. "red maple bark image" → "bark", "red maple leaf image" → "leaf"
+      const altMatch = (img.alt || '').match(/\b(\w+)\s+image$/i);
+      const descriptor = altMatch ? altMatch[1].toLowerCase() : null;
+
+      if (descriptor && descriptor !== 'map') {
+        // Use descriptor-based name; append count only if the same descriptor appears twice
+        usedDescriptors[descriptor] = (usedDescriptors[descriptor] || 0) + 1;
+        const suffix = usedDescriptors[descriptor] > 1 ? usedDescriptors[descriptor] : '';
+        fileName = `${folderName}_${descriptor}${suffix}${ext}`;
+      } else {
+        // No recognisable descriptor — fall back to sequential number
+        fileName = `${folderName}_${imgCount}${ext}`;
+        imgCount++;
+      }
     }
 
     const destPath = path.join(speciesDir, fileName);
