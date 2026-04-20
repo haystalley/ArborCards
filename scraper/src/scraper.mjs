@@ -190,14 +190,15 @@ async function scrapeVTSpeciesPage(page, species) {
         return { src, alt, isMap };
       });
 
-    // Also look for a range/map image specifically (filename-based check)
+    // Also look for a range/map image specifically — uses same predicate as isMap above
     let mapSrc = null;
     const allImgs = Array.from(document.querySelectorAll('img'));
     const mapImg = allImgs.find(img => {
       let filename = '';
       try { filename = new URL(img.src).pathname.split('/').pop().toLowerCase(); } catch (_) {}
       const altLower = (img.alt || '').toLowerCase();
-      return /^map\d*\./.test(filename) || altLower.includes('range map');
+      return /^map\d*\./.test(filename) ||
+        altLower.includes(' map ') || altLower.endsWith(' map') || altLower.includes('range map');
     });
     if (mapImg) mapSrc = mapImg.src;
 
