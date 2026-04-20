@@ -64,8 +64,9 @@ async function testUSDAPage(page, symbol, expectedGenus) {
   const url = `${USDA_BASE}/plant-profile/${symbol}`;
   console.log(`  URL: ${url}`);
 
-  await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
-  await delay(1000, 2000);
+  // domcontentloaded is essential — USDA's Angular app never reaches networkidle
+  await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+  await delay(500, 1000);
 
   // Wait for Angular to render
   let tableFound = false;
@@ -154,7 +155,7 @@ async function quickTest() {
     await delay(2000, 3000);
 
     const vt2 = await testVTPage(page,
-      'https://dendro.cnre.vt.edu/dendrology/syllabus/factsheet.cfm?ID=58',
+      'https://dendro.cnre.vt.edu/dendrology/syllabus/factsheet.cfm?ID=136',
       'Pinus strobus (eastern white pine)');
     vtResults.push({ name: 'Pinus strobus', ...vt2 });
     await delay(2000, 3000);
@@ -164,12 +165,20 @@ async function quickTest() {
     console.log('USDA PLANTS TESTS (plants.sc.egov.usda.gov)');
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
-    const usda1 = await testUSDAPage(page, 'ACRU', 'acer');
-    if (usda1) usdaResults.push({ symbol: 'ACRU', ...usda1 });
+    try {
+      const usda1 = await testUSDAPage(page, 'ACRU', 'acer');
+      if (usda1) usdaResults.push({ symbol: 'ACRU', ...usda1 });
+    } catch (e) {
+      console.log(`  ❌ ACRU test threw: ${e.message}`);
+    }
     await delay(2000, 3000);
 
-    const usda2 = await testUSDAPage(page, 'PIST', 'pinus');
-    if (usda2) usdaResults.push({ symbol: 'PIST', ...usda2 });
+    try {
+      const usda2 = await testUSDAPage(page, 'PIST', 'pinus');
+      if (usda2) usdaResults.push({ symbol: 'PIST', ...usda2 });
+    } catch (e) {
+      console.log(`  ❌ PIST test threw: ${e.message}`);
+    }
 
   } finally {
     await browser.close();

@@ -300,8 +300,10 @@ async function scrapeUSDASpecies(page, scientificName) {
     try {
       // Correct URL: plants.sc.egov.usda.gov/plant-profile/SYMBOL
       const profileUrl = `${USDA_BASE}/plant-profile/${sym}`;
-      await page.goto(profileUrl, { waitUntil: 'networkidle', timeout: 25000 });
-      await delay(1000, 2000);
+      // Use domcontentloaded — Angular keeps making background requests so networkidle never fires.
+      // The waitForSelector('div.general-info') inside extractUSDAPageData handles Angular rendering.
+      await page.goto(profileUrl, { waitUntil: 'domcontentloaded', timeout: 25000 });
+      await delay(500, 1000);
 
       const result = await extractUSDAPageData(page, scientificName);
 
@@ -318,7 +320,7 @@ async function scrapeUSDASpecies(page, scientificName) {
   // Fallback: search by scientific name
   try {
     const searchUrl = `${USDA_BASE}/home/search?term=${encodeURIComponent(scientificName)}&columns=Symbol,Scientific_Name,Common_Name`;
-    await page.goto(searchUrl, { waitUntil: 'networkidle', timeout: 25000 });
+    await page.goto(searchUrl, { waitUntil: 'domcontentloaded', timeout: 25000 });
     await delay(2000, 3000);
 
     // Find a link to a plant profile in the search results
@@ -330,8 +332,8 @@ async function scrapeUSDASpecies(page, scientificName) {
     }, USDA_BASE);
 
     if (profileHref) {
-      await page.goto(profileHref, { waitUntil: 'networkidle', timeout: 25000 });
-      await delay(1000, 2000);
+      await page.goto(profileHref, { waitUntil: 'domcontentloaded', timeout: 25000 });
+      await delay(500, 1000);
       const result = await extractUSDAPageData(page, scientificName);
       if (result && (result.symbol || result.growthHabit)) {
         console.log(`    ✓ USDA found via search: symbol=${result.symbol}`);
