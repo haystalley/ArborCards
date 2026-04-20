@@ -316,10 +316,10 @@ async function fetchUSDADataFromAPI(symbol, sciName) {
     const plantGuideUrl = toAbsolute((d.PlantGuideUrls || [])[0] || null);
 
     return {
-      symbol:      d.Symbol || symbol,
-      group:       d.Group  || '',
-      duration,
-      growthHabit,
+      symbol:      (d.Symbol || symbol).replace(/\s+/g, ' ').trim(),
+      group:       (d.Group  || '').replace(/\s+/g, ' ').trim(),
+      duration:    duration.replace(/\s+/g, ' ').trim(),
+      growthHabit: growthHabit.replace(/\s+/g, ' ').trim(),
       nativeStatus,
       factSheetUrl,
       plantGuideUrl,

@@ -1,10 +1,11 @@
 /**
- * Quick test — scrapes 2 species and verifies all five fixes:
+ * Quick test — scrapes 2 species and verifies all six fixes:
  *   1. Correct USDA domain (plants.sc.egov.usda.gov)
  *   2. USDA Angular DOM extraction (Growth Habits, Symbol, Duration, etc.)
  *   3. Map image detection (filename must start with "map")
  *   4. Clean common/scientific names
  *   5. Clean Native Status field (no embedded newlines or extra whitespace)
+ *   6. Clean all other USDA fields: symbol, group, duration, growthHabit
  *
  * Run: node src/test-scrape.mjs
  */
@@ -88,10 +89,10 @@ async function testUSDAPage(page, symbol, expectedGenus) {
       if (label) fields[label] = value;
     });
 
-    const symbol = fields['Symbol'] || '';
-    const group = fields['Group'] || fields['Plant Type'] || '';
-    const duration = fields['Duration'] || '';
-    const growthHabit = fields['Growth Habits'] || fields['Growth Habit'] || '';
+    const symbol = (fields['Symbol'] || '').replace(/\s+/g, ' ').trim();
+    const group = (fields['Group'] || fields['Plant Type'] || '').replace(/\s+/g, ' ').trim();
+    const duration = (fields['Duration'] || '').replace(/\s+/g, ' ').trim();
+    const growthHabit = (fields['Growth Habits'] || fields['Growth Habit'] || '').replace(/\s+/g, ' ').trim();
     const nativeStatus = (fields['Native Status'] || '').replace(/\s+/g, ' ').trim();
 
     // PDF links
@@ -198,6 +199,11 @@ async function quickTest() {
     usdaResults.some(r => r.symbol === sym && r.growthHabit));
   const allVtOk = vtResults.every(r => r.scientificName && !r.scientificName.includes('\n'));
   const nativeStatusOk = usdaResults.every(r => !r.nativeStatus.includes('\n') && !/\s{2,}/.test(r.nativeStatus));
+  const fieldCleanupOk = usdaResults.every(r =>
+    [r.symbol, r.group, r.duration, r.growthHabit].every(
+      f => !f.includes('\n') && !/\s{2,}/.test(f)
+    )
+  );
   // Bug 3: each VT page should have exactly 1 map image detected, and its filename must start with "map"
   const mapOk = vtResults.length > 0 &&
     vtResults.every(r => r.mapImgs.length === 1 && /^map/.test(r.mapImgs[0]?.filename || ''));
@@ -215,8 +221,9 @@ async function quickTest() {
   console.log(mapDetail);
   console.log(`Bug 4 (name cleanup):  ${allVtOk ? '✅ FIXED (no embedded newlines)' : '❌ Scientific name still dirty'}`);
   console.log(`Bug 5 (native status): ${nativeStatusOk ? '✅ FIXED (no embedded newlines or extra whitespace)' : '❌ Native Status still has extra whitespace'}`);
+  console.log(`Bug 6 (field cleanup): ${fieldCleanupOk ? '✅ FIXED (symbol, group, duration, growthHabit all clean)' : '❌ symbol/group/duration/growthHabit still has extra whitespace'}`);
 
-  if (allUsdaOk && allVtOk && mapOk && nativeStatusOk) {
+  if (allUsdaOk && allVtOk && mapOk && nativeStatusOk && fieldCleanupOk) {
     console.log('\n✅ All checks passed! Run: node src/scraper.mjs to scrape all 402 species.');
   } else {
     console.log('\n⚠️  Some checks failed — review output above for details.');
