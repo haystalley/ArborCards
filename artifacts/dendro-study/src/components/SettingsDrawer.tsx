@@ -25,13 +25,13 @@ const BACK_ITEMS: CheckboxItem[] = [
   { key: "rangeMap",   label: "Range map" },
   { key: "backTags",   label: "Tag pills" },
   { key: "metadata",   label: "Metadata strip" },
-  { key: "leafText",   label: "Leaf description" },
-  { key: "barkText",   label: "Bark description" },
-  { key: "formText",   label: "Form description" },
+  { key: "leafText",   label: "Leaf text" },
+  { key: "barkText",   label: "Bark text" },
+  { key: "formText",   label: "Form text" },
   { key: "looksLike",  label: "Looks Like" },
-  { key: "twigText",   label: "Twig description" },
-  { key: "flowerText", label: "Flower description" },
-  { key: "fruitText",  label: "Fruit description" },
+  { key: "twigText",   label: "Twig text" },
+  { key: "flowerText", label: "Flower text" },
+  { key: "fruitText",  label: "Fruit text" },
 ];
 
 export function SettingsDrawer({ vis, onChange }: Props) {
