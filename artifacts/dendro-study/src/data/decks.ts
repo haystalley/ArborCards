@@ -10,17 +10,9 @@ export function buildDecks(all: SpeciesData[]): Deck[] {
       filter: (s) => s,
     },
     {
-      id: "native",
-      title: "Native Species",
-      description: "Species native to North America",
-      icon: "🌿",
-      filter: (s) =>
-        s.filter((sp) => sp.tags.some((t) => t.toLowerCase() === "native")),
-    },
-    {
-      id: "invasive",
-      title: "Invasive & Introduced",
-      description: "Non-native invasive and planted species",
+      id: "na-invasives",
+      title: "North America Invasives",
+      description: "Non-native invasive and introduced species in North America",
       icon: "⚠️",
       filter: (s) =>
         s.filter((sp) =>
@@ -34,20 +26,24 @@ export function buildDecks(all: SpeciesData[]): Deck[] {
     },
     {
       id: "deciduous-trees",
-      title: "Deciduous Trees",
-      description: "Broad-leaved trees that shed leaves each season",
+      title: "All Deciduous Trees",
+      description: "Broad-leaved trees that shed their leaves each season",
       icon: "🍂",
       filter: (s) =>
         s.filter(
           (sp) =>
-            sp.tags.some((t) => t.toLowerCase() === "deciduous") &&
-            sp.usda.growthHabit.toLowerCase() === "tree"
+            sp.tags.some((t) => t.toLowerCase() === "deciduous") ||
+            (sp.usda.growthHabit.toLowerCase() === "tree" &&
+              !sp.tags.some((t) =>
+                t.toLowerCase().includes("evergreen") ||
+                t.toLowerCase().includes("conifer")
+              ))
         ),
     },
     {
       id: "conifers",
-      title: "Conifers & Evergreens",
-      description: "Needle-bearing and broadleaf evergreen species",
+      title: "All Conifers",
+      description: "Needle-bearing conifers and cone-producing evergreen trees",
       icon: "🌲",
       filter: (s) =>
         s.filter((sp) =>
@@ -55,8 +51,17 @@ export function buildDecks(all: SpeciesData[]): Deck[] {
             (t) =>
               t.toLowerCase().includes("conifer") ||
               t.toLowerCase().includes("evergreen")
-          )
+          ) ||
+          sp.usda.group.toLowerCase().includes("gymnosperm")
         ),
+    },
+    {
+      id: "native",
+      title: "Native Species",
+      description: "Species native to North America",
+      icon: "🌿",
+      filter: (s) =>
+        s.filter((sp) => sp.tags.some((t) => t.toLowerCase() === "native")),
     },
     {
       id: "shrubs",

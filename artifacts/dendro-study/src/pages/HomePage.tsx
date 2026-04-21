@@ -48,6 +48,36 @@ export function HomePage({ species, onSelectDeck }: Props) {
         </p>
       </div>
 
+      {/* Map placeholder button */}
+      <div style={{ maxWidth: 960, margin: "0 auto 32px", display: "flex", justifyContent: "center" }}>
+        <div style={{ position: "relative" }}>
+          <button
+            disabled
+            title="Coming soon — pick a region on the map to study species from that area"
+            style={{
+              background: "rgba(255,255,255,0.05)",
+              border: "1.5px dashed rgba(149,213,178,0.25)",
+              color: "rgba(149,213,178,0.4)",
+              borderRadius: 12, padding: "12px 28px",
+              fontSize: 14, cursor: "not-allowed",
+              fontFamily: "'Segoe UI', sans-serif",
+              display: "flex", alignItems: "center", gap: 10,
+            }}
+          >
+            <span style={{ fontSize: 20 }}>🗺️</span>
+            Study from Map
+            <span style={{
+              fontSize: 10, fontWeight: 800, letterSpacing: "1px",
+              textTransform: "uppercase", background: "rgba(149,213,178,0.15)",
+              padding: "2px 8px", borderRadius: 8, marginLeft: 4,
+              color: "rgba(149,213,178,0.5)",
+            }}>
+              Coming soon
+            </span>
+          </button>
+        </div>
+      </div>
+
       {/* Preset deck grid */}
       <div style={{ maxWidth: 960, margin: "0 auto 48px" }}>
         <SectionLabel>Study Decks</SectionLabel>

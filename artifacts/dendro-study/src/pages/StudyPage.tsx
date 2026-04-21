@@ -140,30 +140,33 @@ export function StudyPage({ deck, cards, vis, onVisChange }: Props) {
           label="← Prev"
         />
 
-        {/* Dot indicators (max 15) */}
-        {cards.length <= 30 && (
-          <div style={{ display: "flex", gap: 5 }}>
-            {Array.from({ length: cards.length }, (_, i) => (
-              <div
-                key={i}
-                onClick={() => { setIndex(i); setFlipped(false); }}
-                style={{
-                  width: i === index ? 22 : 7,
-                  height: 7, borderRadius: 4,
-                  background: i === index ? "#40916c" : "rgba(255,255,255,0.2)",
-                  cursor: "pointer", transition: "all 0.2s",
-                }}
-              />
-            ))}
-          </div>
-        )}
-
-        {/* Counter for large decks */}
-        {cards.length > 30 && (
-          <span style={{ color: "#74c69d", fontSize: 13 }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+          {/* Always-visible numeric counter */}
+          <span style={{
+            color: "#74c69d", fontSize: 14, fontWeight: 700,
+            fontFamily: "'Segoe UI', sans-serif",
+          }}>
             {index + 1} / {cards.length}
           </span>
-        )}
+
+          {/* Dot indicators for small decks */}
+          {cards.length <= 20 && (
+            <div style={{ display: "flex", gap: 5 }}>
+              {Array.from({ length: cards.length }, (_, i) => (
+                <div
+                  key={i}
+                  onClick={() => { setIndex(i); setFlipped(false); }}
+                  style={{
+                    width: i === index ? 22 : 7,
+                    height: 7, borderRadius: 4,
+                    background: i === index ? "#40916c" : "rgba(255,255,255,0.2)",
+                    cursor: "pointer", transition: "all 0.2s",
+                  }}
+                />
+              ))}
+            </div>
+          )}
+        </div>
 
         <NavBtn
           disabled={index === cards.length - 1}
