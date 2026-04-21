@@ -216,7 +216,7 @@ export function MapView({ species, onSelectDeck }: Props) {
         display: "flex", flexDirection: "column",
         overflow: "hidden",
       }}>
-        {selectedStateName && stateAbbr && counts && (
+        {selectedStateName && (
           <>
             {/* Panel header */}
             <div style={{
@@ -225,15 +225,24 @@ export function MapView({ species, onSelectDeck }: Props) {
             }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                 <div>
-                  <div style={{ color: "#95d5b2", fontSize: 11, letterSpacing: "2px", textTransform: "uppercase", fontFamily: "'Segoe UI', sans-serif", opacity: 0.7, marginBottom: 4 }}>
-                    {stateAbbr}
-                  </div>
+                  {stateAbbr && (
+                    <div style={{ color: "#95d5b2", fontSize: 11, letterSpacing: "2px", textTransform: "uppercase", fontFamily: "'Segoe UI', sans-serif", opacity: 0.7, marginBottom: 4 }}>
+                      {stateAbbr}
+                    </div>
+                  )}
                   <div style={{ color: "#d8f3dc", fontSize: 20, fontWeight: 800, fontFamily: "'Segoe UI', sans-serif", lineHeight: 1.1 }}>
                     {selectedStateName}
                   </div>
-                  <div style={{ color: "#40916c", fontSize: 12, marginTop: 4, fontFamily: "'Segoe UI', sans-serif" }}>
-                    {counts.all.length} species found
-                  </div>
+                  {counts && (
+                    <div style={{ color: "#40916c", fontSize: 12, marginTop: 4, fontFamily: "'Segoe UI', sans-serif" }}>
+                      {counts.all.length} species found
+                    </div>
+                  )}
+                  {!stateAbbr && (
+                    <div style={{ color: "rgba(149,213,178,0.45)", fontSize: 11, marginTop: 4, fontFamily: "'Segoe UI', sans-serif" }}>
+                      No species data for this region
+                    </div>
+                  )}
                 </div>
                 <button
                   onClick={closePanel}
@@ -244,8 +253,8 @@ export function MapView({ species, onSelectDeck }: Props) {
               </div>
             </div>
 
-            {/* Deck options */}
-            <div style={{ flex: 1, overflowY: "auto", padding: "10px 12px" }}>
+            {/* Deck options — only when we have state data */}
+            {counts && <div style={{ flex: 1, overflowY: "auto", padding: "10px 12px" }}>
               <div style={{ marginBottom: 10 }}>
                 <div style={{ color: "#40916c", fontSize: 10, fontWeight: 800, letterSpacing: "1.5px", textTransform: "uppercase", fontFamily: "'Segoe UI', sans-serif", marginBottom: 8, paddingLeft: 4 }}>
                   Choose a deck
@@ -285,7 +294,7 @@ export function MapView({ species, onSelectDeck }: Props) {
                   ))}
                 </div>
               )}
-            </div>
+            </div>}
           </>
         )}
       </div>

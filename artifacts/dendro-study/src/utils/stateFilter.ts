@@ -1,6 +1,7 @@
 import type { SpeciesData } from "@/data/types";
 
 // Full state name (from GeoJSON) → 2-letter abbreviation
+// Includes DC and Puerto Rico so all clickable polygons have defined behavior
 export const STATE_NAME_TO_ABBR: Record<string, string> = {
   Alabama: "AL", Alaska: "AK", Arizona: "AZ", Arkansas: "AR",
   California: "CA", Colorado: "CO", Connecticut: "CT", Delaware: "DE",
