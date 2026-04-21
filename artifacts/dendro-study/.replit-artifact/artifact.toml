@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Dendrology Study App"
+version = "1.0.0"
+id = "artifacts/dendro-study"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 21953
+
+[services.development]
+run = "pnpm --filter @workspace/dendro-study run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/dendro-study", "run", "build" ]
+publicDir = "artifacts/dendro-study/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "21953"
+BASE_PATH = "/"
