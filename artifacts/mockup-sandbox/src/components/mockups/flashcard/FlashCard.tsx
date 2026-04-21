@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-// ── Species data (Acer rubrum — nail the UI here, then expand) ────────────────
+// ── Species data (Acer rubrum — design reference card) ────────────────────────
 const SPECIES = [
   {
     id: "Acer_rubrum",
@@ -16,9 +16,9 @@ const SPECIES = [
       nativeStatus: "CAN (N) | L48 (N)",
     },
     images: [
-      { descriptor: "Leaf",   url: "/__mockup/images/acer_rubrum/leaf.jpg" },
-      { descriptor: "Bark",   url: "/__mockup/images/acer_rubrum/bark.jpg" },
-      { descriptor: "Form",   url: "/__mockup/images/acer_rubrum/form.jpg" },
+      { descriptor: "Leaf", url: "/__mockup/images/acer_rubrum/leaf.jpg" },
+      { descriptor: "Bark", url: "/__mockup/images/acer_rubrum/bark.jpg" },
+      { descriptor: "Form", url: "/__mockup/images/acer_rubrum/form.jpg" },
     ],
     mapUrl: "/__mockup/images/acer_rubrum/map.jpg",
     sections: {
@@ -36,17 +36,17 @@ const SPECIES = [
 // ── Tag colour map ────────────────────────────────────────────────────────────
 function tagStyle(tag: string): { bg: string; text: string; border: string } {
   const t = tag.toLowerCase();
-  if (t === "native")     return { bg: "#2d6a4f", text: "#fff",     border: "#1b4332" };
-  if (t === "invasive")   return { bg: "#c1121f", text: "#fff",     border: "#9d0208" };
+  if (t === "native")      return { bg: "#2d6a4f", text: "#fff",    border: "#1b4332" };
+  if (t === "invasive")    return { bg: "#c1121f", text: "#fff",    border: "#9d0208" };
   if (t.includes("planted") || t.includes("ornamental") || t.includes("introduced"))
-                          return { bg: "#e9c46a", text: "#1a1a00",  border: "#c9a227" };
-  if (t.includes("tree")) return { bg: "#1b4332", text: "#d4edda",  border: "#0d2b20" };
-  if (t.includes("shrub"))return { bg: "#7b3f00", text: "#fff",     border: "#5c2e00" };
+                           return { bg: "#e9c46a", text: "#1a1a00", border: "#c9a227" };
+  if (t.includes("tree"))  return { bg: "#1b4332", text: "#d4edda", border: "#0d2b20" };
+  if (t.includes("shrub")) return { bg: "#7b3f00", text: "#fff",    border: "#5c2e00" };
   if (t.includes("conifer") || t.includes("evergreen"))
-                          return { bg: "#1a3a2a", text: "#b7e4c7",  border: "#0d2b1e" };
+                           return { bg: "#1a3a2a", text: "#b7e4c7", border: "#0d2b1e" };
   if (t.includes("deciduous"))
-                          return { bg: "#606c38", text: "#fff",     border: "#4a5428" };
-  return                         { bg: "#4a4a4a", text: "#fff",     border: "#333"    };
+                           return { bg: "#606c38", text: "#fff",    border: "#4a5428" };
+  return                          { bg: "#4a4a4a", text: "#fff",    border: "#333"    };
 }
 
 // ── DescRow ───────────────────────────────────────────────────────────────────
@@ -54,7 +54,7 @@ function DescRow({ label, text, accent }: { label: string; text: string; accent:
   return (
     <div style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
       <span style={{
-        fontSize: 9.5,
+        fontSize: 9,
         fontFamily: "'Segoe UI', sans-serif",
         fontWeight: 800,
         textTransform: "uppercase" as const,
@@ -70,41 +70,15 @@ function DescRow({ label, text, accent }: { label: string; text: string; accent:
         {label}
       </span>
       <p style={{
-        fontSize: 11,
+        fontSize: 10.5,
         color: "#2a2a22",
-        lineHeight: 1.45,
+        lineHeight: 1.4,
         margin: 0,
         flex: 1,
         fontFamily: "'Segoe UI', sans-serif",
       }}>
         {text}
       </p>
-    </div>
-  );
-}
-
-// ── PhotoCell ─────────────────────────────────────────────────────────────────
-function PhotoCell({ url, label }: { url: string; label: string }) {
-  return (
-    <div style={{ position: "relative", overflow: "hidden", background: "#0a0a0a" }}>
-      {/* Absolutely-positioned inner so the img percentage resolves against a known size */}
-      <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <img
-          src={url}
-          alt={label}
-          draggable={false}
-          style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain", display: "block" }}
-        />
-      </div>
-      <div style={{
-        position: "absolute", bottom: 5, left: 7,
-        background: "rgba(0,0,0,0.6)", backdropFilter: "blur(3px)",
-        color: "#fff", fontSize: 10, padding: "2px 8px", borderRadius: 10,
-        fontFamily: "'Segoe UI', sans-serif", fontWeight: 700,
-        letterSpacing: "0.8px", textTransform: "uppercase",
-      }}>
-        {label}
-      </div>
     </div>
   );
 }
@@ -119,8 +93,8 @@ function NavButton({ label, onClick }: { label: string; onClick: () => void }) {
         border: "1px solid rgba(149,213,178,0.2)",
         color: "#95d5b2",
         borderRadius: 40,
-        padding: "8px 24px",
-        fontSize: 18,
+        padding: "10px 26px",
+        fontSize: 20,
         cursor: "pointer",
         fontFamily: "sans-serif",
         transition: "background 0.15s",
@@ -135,7 +109,7 @@ function NavButton({ label, onClick }: { label: string; onClick: () => void }) {
 
 // ── Main Component ────────────────────────────────────────────────────────────
 export function FlashCard() {
-  const [index, setIndex]   = useState(0);
+  const [index, setIndex]     = useState(0);
   const [flipped, setFlipped] = useState(false);
 
   const total   = SPECIES.length;
@@ -147,7 +121,7 @@ export function FlashCard() {
   }
 
   return (
-    // Outer wrapper: exactly the iframe viewport — no scroll
+    // height: 100vh + overflow: hidden keeps everything inside the iframe
     <div style={{
       height: "100vh",
       overflow: "hidden",
@@ -164,8 +138,8 @@ export function FlashCard() {
 
       {/* Header */}
       <div style={{
-        color: "#95d5b2", fontSize: 10, letterSpacing: "2.5px",
-        textTransform: "uppercase", marginBottom: 4, opacity: 0.75,
+        color: "#95d5b2", fontSize: 11, letterSpacing: "2.5px",
+        textTransform: "uppercase", marginBottom: 6, opacity: 0.8,
         fontFamily: "'Segoe UI', sans-serif", flexShrink: 0,
       }}>
         Dendrology Flashcard
@@ -173,20 +147,19 @@ export function FlashCard() {
 
       {/* Counter */}
       <div style={{
-        color: "#d8f3dc", fontSize: 12, marginBottom: 10, opacity: 0.65,
+        color: "#d8f3dc", fontSize: 13, marginBottom: 12, opacity: 0.7,
         fontFamily: "'Segoe UI', sans-serif", flexShrink: 0,
       }}>
         {index + 1} / {total}
       </div>
 
-      {/* ── 3D Card (flex: 1 → fills all remaining height) ── */}
+      {/* ── 3D Card — fills remaining vertical space ── */}
       <div style={{
         perspective: "1400px",
         width: 820,
         maxWidth: "100%",
         flex: 1,
         minHeight: 0,
-        flexShrink: 1,
       }}>
         <div
           style={{
@@ -207,55 +180,55 @@ export function FlashCard() {
             backfaceVisibility: "hidden",
             WebkitBackfaceVisibility: "hidden",
             background: "#f8f5ef",
-            borderRadius: 16,
-            boxShadow: "0 24px 70px rgba(0,0,0,0.5), 0 6px 20px rgba(0,0,0,0.25)",
+            borderRadius: 18,
+            boxShadow: "0 32px 80px rgba(0,0,0,0.55), 0 8px 24px rgba(0,0,0,0.3)",
             display: "flex", flexDirection: "column", overflow: "hidden",
           }}>
-            {/* Green stripe */}
-            <div style={{ height: 7, flexShrink: 0, background: "linear-gradient(90deg, #1b4332, #2d6a4f, #40916c)" }} />
+            {/* Accent stripe */}
+            <div style={{ height: 7, flexShrink: 0, background: "linear-gradient(90deg, #1b4332 0%, #2d6a4f 50%, #40916c 100%)" }} />
 
-            {/* Content */}
+            {/* Front body — unchanged from original design */}
             <div style={{
               flex: 1, display: "flex", flexDirection: "column",
               alignItems: "center", justifyContent: "center",
-              padding: "28px 60px", textAlign: "center", position: "relative",
+              padding: "36px 60px", textAlign: "center", position: "relative",
             }}>
-              <div style={{ fontSize: 64, opacity: 0.05, position: "absolute", pointerEvents: "none" }}>🌿</div>
+              <div style={{ fontSize: 72, opacity: 0.06, position: "absolute", pointerEvents: "none" }}>🌿</div>
 
-              <p style={{ color: "#9b8c75", fontSize: 11, letterSpacing: "2px", textTransform: "uppercase", fontFamily: "'Segoe UI', sans-serif", marginBottom: 14 }}>
+              <p style={{ color: "#9b8c75", fontSize: 12, letterSpacing: "2px", textTransform: "uppercase", fontFamily: "'Segoe UI', sans-serif", marginBottom: 16 }}>
                 {species.family}
               </p>
-              <h1 style={{ fontSize: 44, fontWeight: "bold", color: "#1b4332", lineHeight: 1.1, marginBottom: 12 }}>
+              <h1 style={{ fontSize: 46, fontWeight: "bold", color: "#1b4332", lineHeight: 1.1, marginBottom: 14, textShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
                 {species.commonName}
               </h1>
-              <p style={{ fontSize: 20, fontStyle: "italic", color: "#6b6658", lineHeight: 1.3 }}>
+              <p style={{ fontSize: 21, fontStyle: "italic", color: "#6b6658", lineHeight: 1.3 }}>
                 {species.scientificName}
               </p>
 
-              <div style={{ display: "flex", gap: 8, marginTop: 24, flexWrap: "wrap", justifyContent: "center" }}>
+              <div style={{ display: "flex", gap: 8, marginTop: 28, flexWrap: "wrap", justifyContent: "center" }}>
                 {species.tags.map(tag => {
                   const s = tagStyle(tag);
                   return (
                     <span key={tag} style={{
                       background: s.bg, color: s.text, border: `1px solid ${s.border}`,
-                      padding: "4px 13px", borderRadius: 20, fontSize: 11,
+                      padding: "5px 14px", borderRadius: 20, fontSize: 12,
                       fontFamily: "'Segoe UI', sans-serif", fontWeight: 700,
-                      letterSpacing: "0.5px", textTransform: "uppercase",
+                      letterSpacing: "0.6px", textTransform: "uppercase",
                     }}>{tag}</span>
                   );
                 })}
               </div>
             </div>
 
-            {/* Hint bar */}
+            {/* Hint bar — unchanged from original design */}
             <div style={{
-              padding: "10px 24px", flexShrink: 0,
+              padding: "12px 24px", flexShrink: 0,
               background: "#f0ede5", borderTop: "1px solid #e0dbd0",
               display: "flex", alignItems: "center", justifyContent: "center",
-              gap: 8, color: "#9b8c75", fontSize: 12,
+              gap: 8, color: "#9b8c75", fontSize: 13,
               fontFamily: "'Segoe UI', sans-serif",
             }}>
-              <span style={{ fontSize: 14 }}>👆</span>
+              <span style={{ fontSize: 15 }}>👆</span>
               Click card to reveal identification details
             </div>
           </div>
@@ -267,20 +240,21 @@ export function FlashCard() {
             WebkitBackfaceVisibility: "hidden",
             transform: "rotateY(180deg)",
             background: "#111",
-            borderRadius: 16,
-            boxShadow: "0 24px 70px rgba(0,0,0,0.5), 0 6px 20px rgba(0,0,0,0.25)",
+            borderRadius: 18,
+            boxShadow: "0 32px 80px rgba(0,0,0,0.55), 0 8px 24px rgba(0,0,0,0.3)",
             display: "flex", flexDirection: "column", overflow: "hidden",
           }}>
 
-            {/* ── Photo zone: top 64% ── */}
+            {/* ── Photo zone: top 57% ── */}
             <div style={{
-              flex: "0 0 64%",
+              flex: "0 0 57%",
               display: "grid",
               gridTemplateColumns: "1fr 1fr",
               gridTemplateRows: "1fr 1fr",
               gap: 2,
               position: "relative",
               background: "#0a0a0a",
+              overflow: "hidden",
             }}>
               {/* Left col — leaf, spans both rows */}
               <div style={{ gridRow: "1 / 3", position: "relative", overflow: "hidden", background: "#0a0a0a" }}>
@@ -288,7 +262,7 @@ export function FlashCard() {
                   <img src={species.images[0].url} alt="leaf" draggable={false}
                     style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain", display: "block" }} />
                 </div>
-                <div style={{ position: "absolute", bottom: 5, left: 7, background: "rgba(0,0,0,0.6)", backdropFilter: "blur(3px)", color: "#fff", fontSize: 10, padding: "2px 8px", borderRadius: 10, fontFamily: "'Segoe UI', sans-serif", fontWeight: 700, letterSpacing: "0.8px", textTransform: "uppercase" }}>Leaf</div>
+                <PhotoLabel text="Leaf" />
               </div>
 
               {/* Top right — bark */}
@@ -297,7 +271,7 @@ export function FlashCard() {
                   <img src={species.images[1].url} alt="bark" draggable={false}
                     style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain", display: "block" }} />
                 </div>
-                <div style={{ position: "absolute", bottom: 5, left: 7, background: "rgba(0,0,0,0.6)", backdropFilter: "blur(3px)", color: "#fff", fontSize: 10, padding: "2px 8px", borderRadius: 10, fontFamily: "'Segoe UI', sans-serif", fontWeight: 700, letterSpacing: "0.8px", textTransform: "uppercase" }}>Bark</div>
+                <PhotoLabel text="Bark" />
               </div>
 
               {/* Bottom right — form */}
@@ -306,7 +280,7 @@ export function FlashCard() {
                   <img src={species.images[2].url} alt="form" draggable={false}
                     style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain", display: "block" }} />
                 </div>
-                <div style={{ position: "absolute", bottom: 5, left: 7, background: "rgba(0,0,0,0.6)", backdropFilter: "blur(3px)", color: "#fff", fontSize: 10, padding: "2px 8px", borderRadius: 10, fontFamily: "'Segoe UI', sans-serif", fontWeight: 700, letterSpacing: "0.8px", textTransform: "uppercase" }}>Form</div>
+                <PhotoLabel text="Form" />
               </div>
 
               {/* Range map — top left overlay */}
@@ -325,9 +299,7 @@ export function FlashCard() {
                     textAlign: "center", padding: "3px 0",
                     fontFamily: "'Segoe UI', sans-serif", fontWeight: 700,
                     letterSpacing: "0.8px", textTransform: "uppercase",
-                  }}>
-                    Native Range
-                  </div>
+                  }}>Native Range</div>
                 </div>
               )}
 
@@ -352,12 +324,12 @@ export function FlashCard() {
               </div>
             </div>
 
-            {/* ── Info panel: bottom 36% ── */}
+            {/* ── Info panel: bottom 43% ── */}
             <div style={{
               flex: 1,
               background: "#f8f5ef",
               display: "flex", flexDirection: "column",
-              overflow: "hidden", minHeight: 0,
+              overflow: "hidden",
             }}>
               {/* Metadata strip */}
               <div style={{
@@ -379,7 +351,7 @@ export function FlashCard() {
                     borderRight: i < arr.length - 1 ? "1px solid #d6d1c5" : "none",
                     textAlign: "center",
                   }}>
-                    <div style={{ fontSize: 8, fontFamily: "'Segoe UI', sans-serif", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.6px", color: "#9b8c75", marginBottom: 1 }}>
+                    <div style={{ fontSize: 7.5, fontFamily: "'Segoe UI', sans-serif", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.6px", color: "#9b8c75", marginBottom: 1 }}>
                       {label}
                     </div>
                     <div style={{ fontSize: 10.5, color: "#1a1a14", fontFamily: "'Segoe UI', sans-serif", fontWeight: 500, lineHeight: 1.2 }}>
@@ -389,11 +361,11 @@ export function FlashCard() {
                 ))}
               </div>
 
-              {/* Description — scrollable area */}
+              {/* ── Description rows — no scroll, all content visible ── */}
               <div style={{
-                flex: 1, minHeight: 0,
-                padding: "7px 13px 6px",
-                overflowY: "auto",
+                flex: 1,
+                padding: "7px 13px 5px",
+                overflow: "hidden",
                 display: "flex", flexDirection: "column", gap: 5,
               }}>
                 {/* Primary: Leaf, Bark, Form, Looks Like */}
@@ -402,28 +374,43 @@ export function FlashCard() {
                 <DescRow label="Form"       text={species.sections.form}      accent="#2d6a4f" />
                 <DescRow label="Looks Like" text={species.sections.looksLike} accent="#c1121f" />
 
-                {/* Secondary: Twig / Flower / Fruit — 3-col compact grid */}
+                {/* Secondary: Twig / Flower / Fruit — compact 3-col grid */}
                 <div style={{
-                  display: "grid", gridTemplateColumns: "1fr 1fr 1fr",
-                  gap: "4px 10px", marginTop: 3,
-                  paddingTop: 5, borderTop: "1px dashed #d6d1c5",
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr 1fr",
+                  gap: "0 10px",
+                  paddingTop: 5,
+                  borderTop: "1px dashed #d6d1c5",
+                  flex: 1,
+                  minHeight: 0,
                 }}>
                   {(["twig", "flower", "fruit"] as const).map(key => (
-                    <div key={key}>
-                      <div style={{ fontSize: 8.5, fontFamily: "'Segoe UI', sans-serif", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.7px", color: "#9b8c75", marginBottom: 2 }}>
+                    <div key={key} style={{ overflow: "hidden" }}>
+                      <div style={{
+                        fontSize: 8, fontFamily: "'Segoe UI', sans-serif",
+                        fontWeight: 800, textTransform: "uppercase",
+                        letterSpacing: "0.7px", color: "#9b8c75", marginBottom: 2,
+                      }}>
                         {key.charAt(0).toUpperCase() + key.slice(1)}
                       </div>
-                      <p style={{ fontSize: 10.5, color: "#4a4a3a", lineHeight: 1.4, margin: 0, fontFamily: "'Segoe UI', sans-serif" }}>
+                      <p style={{
+                        fontSize: 10, color: "#4a4a3a", lineHeight: 1.35,
+                        margin: 0, fontFamily: "'Segoe UI', sans-serif",
+                        overflow: "hidden",
+                        display: "-webkit-box",
+                        WebkitLineClamp: 4,
+                        WebkitBoxOrient: "vertical",
+                      } as React.CSSProperties}>
                         {species.sections[key]}
                       </p>
                     </div>
                   ))}
                 </div>
 
-                {/* Footer: sci name + flip hint */}
+                {/* Footer */}
                 <div style={{
                   display: "flex", justifyContent: "space-between", alignItems: "center",
-                  paddingTop: 4, marginTop: "auto", borderTop: "1px solid #e4e0d6",
+                  paddingTop: 4, borderTop: "1px solid #e4e0d6", flexShrink: 0,
                 }}>
                   <span style={{ fontSize: 10.5, fontStyle: "italic", color: "#9b8c75" }}>
                     {species.scientificName}
@@ -440,12 +427,12 @@ export function FlashCard() {
 
       {/* ── Navigation ── */}
       <div style={{
-        display: "flex", gap: 18, marginTop: 10, alignItems: "center", flexShrink: 0,
+        display: "flex", gap: 20, marginTop: 16, alignItems: "center", flexShrink: 0,
       }}>
         <NavButton label="←" onClick={() => navigate(-1)} />
         <div style={{
-          color: "#95d5b2", fontSize: 11, opacity: 0.65,
-          fontFamily: "'Segoe UI', sans-serif", width: 60, textAlign: "center",
+          color: "#95d5b2", fontSize: 12, opacity: 0.7,
+          fontFamily: "'Segoe UI', sans-serif", width: 70, textAlign: "center",
           textTransform: "uppercase", letterSpacing: "1px",
         }}>
           {flipped ? "back" : "front"}
@@ -453,6 +440,21 @@ export function FlashCard() {
         <NavButton label="→" onClick={() => navigate(1)} />
       </div>
 
+    </div>
+  );
+}
+
+// ── Photo label chip ──────────────────────────────────────────────────────────
+function PhotoLabel({ text }: { text: string }) {
+  return (
+    <div style={{
+      position: "absolute", bottom: 5, left: 7, zIndex: 2,
+      background: "rgba(0,0,0,0.58)", backdropFilter: "blur(3px)",
+      color: "#fff", fontSize: 10, padding: "2px 8px", borderRadius: 10,
+      fontFamily: "'Segoe UI', sans-serif", fontWeight: 700,
+      letterSpacing: "0.8px", textTransform: "uppercase",
+    }}>
+      {text}
     </div>
   );
 }
