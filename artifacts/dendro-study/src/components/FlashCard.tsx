@@ -215,46 +215,51 @@ export function FlashCard({ species, flipped, onFlip, vis }: Props) {
           <PhotoCell url={barkImg}  label="Bark" show={V.back.barkImage} />
           <PhotoCell url={formImg}  label="Form" show={V.back.formImage} />
 
-          {/* Range map — top left overlay */}
-          {species.mapImage && V.back.rangeMap && (
+          {/* Range map — top left overlay — always rendered, hidden when unchecked */}
+          <div style={{
+            position: "absolute", top: 9, left: 9, zIndex: 10,
+            width: 108, borderRadius: 7, overflow: "hidden",
+            boxShadow: species.mapImage && V.back.rangeMap ? "0 3px 10px rgba(0,0,0,0.65)" : "none",
+            border: "1.5px solid rgba(255,255,255,0.2)",
+            background: "#c8e6f5",
+            visibility: species.mapImage ? "visible" : "hidden",
+          }}>
+            <img
+              src={species.mapImage ?? ""}
+              alt="Native range map"
+              style={{ width: "100%", display: "block", opacity: V.back.rangeMap ? 1 : 0 }}
+              draggable={false}
+            />
             <div style={{
-              position: "absolute", top: 9, left: 9, zIndex: 10,
-              width: 108, borderRadius: 7, overflow: "hidden",
-              boxShadow: "0 3px 10px rgba(0,0,0,0.65)",
-              border: "1.5px solid rgba(255,255,255,0.2)", background: "#c8e6f5",
-            }}>
-              <img src={species.mapImage} alt="Native range map"
-                style={{ width: "100%", display: "block" }} draggable={false} />
-              <div style={{
-                background: "rgba(0,0,0,0.6)", color: "#fff", fontSize: 9,
-                textAlign: "center", padding: "3px 0",
-                fontFamily: "'Segoe UI', sans-serif", fontWeight: 700,
-                letterSpacing: "0.8px", textTransform: "uppercase",
-              }}>Native Range</div>
-            </div>
-          )}
+              background: "rgba(0,0,0,0.6)", color: "rgba(255,255,255," + (V.back.rangeMap ? "1" : "0") + ")", fontSize: 9,
+              textAlign: "center", padding: "3px 0",
+              fontFamily: "'Segoe UI', sans-serif", fontWeight: 700,
+              letterSpacing: "0.8px", textTransform: "uppercase",
+            }}>Native Range</div>
+          </div>
 
-          {/* Tags — top right overlay */}
-          {V.back.backTags && (
-            <div style={{
-              position: "absolute", top: 9, right: 9, zIndex: 10,
-              display: "flex", flexDirection: "column", gap: 4, alignItems: "flex-end",
-            }}>
-              {species.tags.map((tag) => {
-                const s = tagStyle(tag);
-                return (
-                  <span key={tag} style={{
-                    background: s.bg, color: s.text,
-                    padding: "3px 9px", borderRadius: 11, fontSize: 10,
-                    fontFamily: "'Segoe UI', sans-serif", fontWeight: 800,
-                    letterSpacing: "0.4px", textTransform: "uppercase",
-                    boxShadow: "0 2px 6px rgba(0,0,0,0.45)",
-                    border: "1px solid rgba(255,255,255,0.12)",
-                  }}>{tag}</span>
-                );
-              })}
-            </div>
-          )}
+          {/* Tags — top right overlay — always rendered, hidden when unchecked */}
+          <div style={{
+            position: "absolute", top: 9, right: 9, zIndex: 10,
+            display: "flex", flexDirection: "column", gap: 4, alignItems: "flex-end",
+            minWidth: 60,
+          }}>
+            {species.tags.map((tag) => {
+              const s = tagStyle(tag);
+              return (
+                <span key={tag} style={{
+                  background: V.back.backTags ? s.bg : "transparent",
+                  color: V.back.backTags ? s.text : "transparent",
+                  border: V.back.backTags ? `1px solid rgba(255,255,255,0.12)` : "1px solid transparent",
+                  padding: "3px 9px", borderRadius: 11, fontSize: 10,
+                  fontFamily: "'Segoe UI', sans-serif", fontWeight: 800,
+                  letterSpacing: "0.4px", textTransform: "uppercase",
+                  boxShadow: V.back.backTags ? "0 2px 6px rgba(0,0,0,0.45)" : "none",
+                  minWidth: 48, textAlign: "center",
+                }}>{tag}</span>
+              );
+            })}
+          </div>
         </div>
 
         {/* ── Info panel: bottom 43% ── */}
