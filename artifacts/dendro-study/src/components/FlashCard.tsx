@@ -99,9 +99,9 @@ interface Props {
 }
 
 export function FlashCard({ species, flipped, onFlip, vis }: Props) {
-  // Resolve images by descriptor
+  // Resolve images by alt text keyword (e.g. "leaf", "bark", "form")
   const findImg = (key: string) =>
-    species.images.find((i) => i.descriptor.toLowerCase().includes(key.toLowerCase()))?.url ?? null;
+    species.images.find((i) => i.alt.toLowerCase().includes(key.toLowerCase()))?.file ?? null;
 
   const leafImg  = findImg("leaf");
   const barkImg  = findImg("bark");

@@ -61,28 +61,38 @@ node src/test-scrape.mjs
 
 The scraper is resumable — if interrupted, re-running picks up where it left off.
 
-### Study Web App (`study-app/`)
+### Dendrology Study App (`artifacts/dendro-study/`)
 
-A static HTML/CSS/JS app for GitHub Pages. Features:
-- Browse and search 402 species
-- Filter by tags: Deciduous, Conifer/Evergreen, Tree, Shrub, Native, Invasive, Planted/Introduced
-- Image gallery with thumbnails per species
-- Range/habitat maps
-- USDA PLANTS data (symbol, group, duration, growth habit, native status)
-- Full species descriptions
-- PDF links (Fact Sheet, Plant Guide)
-- Interactive flashcard quiz (identify species from images)
+A React + Vite flashcard study app at preview path `/`. Features:
+- 3D-flip flashcards (front: name/family/tags; back: images + text sections + USDA metadata)
+- Settings drawer with per-field visibility toggles (blank-preserving)
+- Six preset study decks: VT Syllabus, Invasives, Deciduous, Conifers, Natives, Shrubs
+- By-family deck grid (auto-generated from species data)
+- Interactive map view (Leaflet + CartoDB DarkMatter tiles) — click any state to build a deck from species found there (All / Natives / Invasives / by family)
+- 1,130 species loaded from `public/data/species_data.json`
 
-**To deploy on GitHub Pages:**
-1. Copy `Species_Database/` and `study-app/` to your GitHub repo
-2. Enable GitHub Pages (Settings → Pages)
-3. Open `study-app/index.html` as the entry point
+**Data schema** (defined in `src/data/types.ts`):
+```typescript
+SpeciesImage: { file: string; alt: string; isMap: boolean; }
+SpeciesData:  { id, commonName, scientificName, family, tags, description,
+                usda: { symbol, group, duration, growthHabit, nativeStatus },
+                images: SpeciesImage[], mapImage, pdfs, sourceUrl, folder, sections? }
+```
+Images use relative paths like `Acer_rubrum/Acer_rubrum_leaf.jpg` (resolved against base URL at runtime).
 
-**Local testing:**
+**Deploy to GitHub Pages (repo: `dendro-cards`)**
+
+CI/CD is wired via `.github/workflows/deploy.yml` — every push to `main` triggers an automatic deploy.
+
+One-time setup steps (do once in GitHub):
+1. **Repo Settings → Pages → Source**: set to **GitHub Actions** (not "Deploy from branch")
+2. That's it — `GITHUB_TOKEN` is automatically provided to the workflow
+
+Build command (for manual local build):
 ```bash
-cd study-app && python3 -m http.server 8080
-# Then open http://localhost:8080
+PORT=3000 BASE_PATH=/dendro-cards/ NODE_ENV=production \
+  pnpm --filter @workspace/dendro-study build
+# Output: artifacts/dendro-study/dist/public/
 ```
 
-The app reads data from `../Species_Database/species_data.json` relative to `study-app/`.
-If deploying at the repo root, update the `DATA_URL` in `app.js` to `./Species_Database/species_data.json`.
+Live URL after deploy: `https://<username>.github.io/dendro-cards/`

@@ -1,6 +1,7 @@
 export interface SpeciesImage {
-  descriptor: string;
-  url: string;
+  file: string;
+  alt: string;
+  isMap: boolean;
 }
 
 export interface SpeciesData {
