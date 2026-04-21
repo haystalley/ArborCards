@@ -7,7 +7,7 @@
  *   5. Clean Native Status field (no embedded newlines or extra whitespace)
  *   6. Clean all other USDA fields: symbol, group, duration, growthHabit
  *   7. Hybrid × stripping — names like "Abelia ×grandiflora" produce valid
- *      symbol candidates free of the × character (ID=417)
+ *      symbol candidates free of the × character (ID=417) 
  *
  * Run: node src/test-scrape.mjs
  */
