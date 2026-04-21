@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
+import { Switch, Route, Router as WouterRouter } from "wouter";
 import type { SpeciesData, Deck, VisibilitySettings } from "@/data/types";
 import { DEFAULT_VISIBILITY } from "@/data/types";
 import { HomePage } from "@/pages/HomePage";
 import { StudyPage } from "@/pages/StudyPage";
+import { MapView } from "@/pages/MapView";
 import NotFound from "@/pages/not-found";
 
 const LS_VIS = "dendro-vis-v1";
@@ -63,6 +64,9 @@ function App() {
             vis={vis}
             onVisChange={setVis}
           />
+        </Route>
+        <Route path="/map">
+          <MapView species={species} onSelectDeck={handleSelectDeck} />
         </Route>
         <Route component={NotFound} />
       </Switch>

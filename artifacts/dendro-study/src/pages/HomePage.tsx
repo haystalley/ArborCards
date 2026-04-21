@@ -48,34 +48,9 @@ export function HomePage({ species, onSelectDeck }: Props) {
         </p>
       </div>
 
-      {/* Map placeholder button */}
+      {/* Study from Map button — active */}
       <div style={{ maxWidth: 960, margin: "0 auto 32px", display: "flex", justifyContent: "center" }}>
-        <div style={{ position: "relative" }}>
-          <button
-            disabled
-            title="Coming soon — pick a region on the map to study species from that area"
-            style={{
-              background: "rgba(255,255,255,0.05)",
-              border: "1.5px dashed rgba(149,213,178,0.25)",
-              color: "rgba(149,213,178,0.4)",
-              borderRadius: 12, padding: "12px 28px",
-              fontSize: 14, cursor: "not-allowed",
-              fontFamily: "'Segoe UI', sans-serif",
-              display: "flex", alignItems: "center", gap: 10,
-            }}
-          >
-            <span style={{ fontSize: 20 }}>🗺️</span>
-            Study from Map
-            <span style={{
-              fontSize: 10, fontWeight: 800, letterSpacing: "1px",
-              textTransform: "uppercase", background: "rgba(149,213,178,0.15)",
-              padding: "2px 8px", borderRadius: 8, marginLeft: 4,
-              color: "rgba(149,213,178,0.5)",
-            }}>
-              Coming soon
-            </span>
-          </button>
-        </div>
+        <MapButton onClick={() => navigate("~/map")} />
       </div>
 
       {/* Preset deck grid */}
@@ -194,5 +169,41 @@ function DeckCard({
         </p>
       )}
     </div>
+  );
+}
+
+function MapButton({ onClick }: { onClick: () => void }) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        background: hovered
+          ? "rgba(64,145,108,0.25)"
+          : "rgba(64,145,108,0.1)",
+        border: `1.5px solid ${hovered ? "rgba(149,213,178,0.5)" : "rgba(149,213,178,0.25)"}`,
+        color: hovered ? "#95d5b2" : "#74c69d",
+        borderRadius: 14, padding: "14px 32px",
+        fontSize: 15, cursor: "pointer",
+        fontFamily: "'Segoe UI', sans-serif", fontWeight: 600,
+        display: "flex", alignItems: "center", gap: 12,
+        transition: "all 0.18s",
+        boxShadow: hovered ? "0 6px 20px rgba(0,0,0,0.4)" : "none",
+        transform: hovered ? "translateY(-1px)" : "none",
+      }}
+    >
+      <span style={{ fontSize: 22 }}>🗺️</span>
+      Study from Map
+      <span style={{
+        fontSize: 11, fontWeight: 700, letterSpacing: "0.6px",
+        background: "rgba(64,145,108,0.3)",
+        padding: "3px 9px", borderRadius: 8,
+        color: "#74c69d",
+      }}>
+        Pick a state
+      </span>
+    </button>
   );
 }
