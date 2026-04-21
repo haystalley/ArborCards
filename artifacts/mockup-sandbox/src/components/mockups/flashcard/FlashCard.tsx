@@ -189,7 +189,7 @@ function DescRow({
       </span>
       <p
         style={{
-          fontSize: isPrimary ? 12.5 : 12,
+          fontSize: isPrimary ? 11.5 : 11,
           color: "#2a2a22",
           lineHeight: 1.5,
           margin: 0,
@@ -214,7 +214,7 @@ export function FlashCard() {
     looksLike: true,
     twig: true,
     flower: true,
-    fruit: false,
+    fruit: true,
   });
 
   const species = SAMPLE_SPECIES[index];
@@ -284,7 +284,7 @@ export function FlashCard() {
         <div
           style={{
             width: "100%",
-            height: 490,
+            height: 560,
             position: "relative",
             transformStyle: "preserve-3d",
             transition: "transform 0.7s cubic-bezier(0.4, 0, 0.2, 1)",
@@ -455,16 +455,16 @@ export function FlashCard() {
               overflow: "hidden",
             }}
           >
-            {/* ── Photo zone (top ~52%) ── */}
+            {/* ── Photo zone (top 2/3) ── */}
             <div
               style={{
-                flex: "0 0 52%",
+                flex: "0 0 66%",
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
                 gridTemplateRows: "1fr 1fr",
                 gap: 2,
                 position: "relative",
-                background: "#000",
+                background: "#0a0a0a",
               }}
             >
               {/* Left col: leaf (full height) */}
@@ -473,34 +473,38 @@ export function FlashCard() {
                   gridRow: "1 / 3",
                   position: "relative",
                   overflow: "hidden",
+                  background: "#0a0a0a",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
                 <img
                   src={species.images[0]?.url}
                   alt={species.images[0]?.descriptor}
-                  style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                  style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain", display: "block" }}
                   draggable={false}
                 />
                 <PhotoLabel label={species.images[0]?.descriptor ?? "leaf"} />
               </div>
 
               {/* Top right: bark */}
-              <div style={{ position: "relative", overflow: "hidden" }}>
+              <div style={{ position: "relative", overflow: "hidden", background: "#0a0a0a", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <img
                   src={species.images[1]?.url}
                   alt={species.images[1]?.descriptor}
-                  style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                  style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain", display: "block" }}
                   draggable={false}
                 />
                 <PhotoLabel label={species.images[1]?.descriptor ?? "bark"} />
               </div>
 
               {/* Bottom right: form */}
-              <div style={{ position: "relative", overflow: "hidden" }}>
+              <div style={{ position: "relative", overflow: "hidden", background: "#0a0a0a", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <img
                   src={species.images[2]?.url}
                   alt={species.images[2]?.descriptor}
-                  style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                  style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain", display: "block" }}
                   draggable={false}
                 />
                 <PhotoLabel label={species.images[2]?.descriptor ?? "form"} />
@@ -608,39 +612,40 @@ export function FlashCard() {
                 {[
                   ["Family", species.family],
                   ["Group", species.usda.group],
-                  ["Duration", species.usda.duration],
                   ["Habit", species.usda.growthHabit],
+                  ["Duration", species.usda.duration],
                   ["Symbol", species.usda.symbol],
+                  ["Range", species.usda.nativeStatus],
                 ].map(([label, value], i, arr) => (
                   <div
                     key={label}
                     style={{
-                      flex: 1,
-                      padding: "7px 8px",
+                      flex: label === "Range" ? 2 : 1,
+                      padding: "5px 6px",
                       borderRight: i < arr.length - 1 ? "1px solid #d6d1c5" : "none",
                       textAlign: "center",
                     }}
                   >
                     <div
                       style={{
-                        fontSize: 9,
+                        fontSize: 8.5,
                         fontFamily: "'Segoe UI', sans-serif",
                         fontWeight: 800,
                         textTransform: "uppercase",
-                        letterSpacing: "0.8px",
+                        letterSpacing: "0.7px",
                         color: "#9b8c75",
-                        marginBottom: 2,
+                        marginBottom: 1,
                       }}
                     >
                       {label}
                     </div>
                     <div
                       style={{
-                        fontSize: 12,
+                        fontSize: 11,
                         color: "#1a1a14",
                         fontFamily: "'Segoe UI', sans-serif",
                         fontWeight: 500,
-                        lineHeight: 1.3,
+                        lineHeight: 1.2,
                       }}
                     >
                       {value}
@@ -653,11 +658,11 @@ export function FlashCard() {
               <div
                 style={{
                   flex: 1,
-                  padding: "10px 14px 6px",
+                  padding: "7px 12px 4px",
                   overflowY: "auto",
                   display: "flex",
                   flexDirection: "column",
-                  gap: 7,
+                  gap: 5,
                   minHeight: 0,
                 }}
               >
@@ -672,15 +677,15 @@ export function FlashCard() {
                   />
                 ))}
 
-                {/* Secondary sections — shown in a 2-col grid, smaller */}
+                {/* Secondary sections — 3-col grid */}
                 {activeSecondary.length > 0 && (
                   <div
                     style={{
                       display: "grid",
-                      gridTemplateColumns: "1fr 1fr",
-                      gap: "6px 14px",
-                      marginTop: 4,
-                      paddingTop: 6,
+                      gridTemplateColumns: "1fr 1fr 1fr",
+                      gap: "4px 10px",
+                      marginTop: 3,
+                      paddingTop: 5,
                       borderTop: "1px dashed #d6d1c5",
                     }}
                   >
@@ -688,11 +693,11 @@ export function FlashCard() {
                       <div key={key}>
                         <span
                           style={{
-                            fontSize: 10,
+                            fontSize: 9,
                             fontFamily: "'Segoe UI', sans-serif",
                             fontWeight: 800,
                             textTransform: "uppercase",
-                            letterSpacing: "0.8px",
+                            letterSpacing: "0.7px",
                             color: "#9b8c75",
                           }}
                         >
@@ -700,9 +705,9 @@ export function FlashCard() {
                         </span>
                         <p
                           style={{
-                            fontSize: 11,
+                            fontSize: 10.5,
                             color: "#4a4a3a",
-                            lineHeight: 1.45,
+                            lineHeight: 1.4,
                             margin: "2px 0 0",
                             fontFamily: "'Segoe UI', sans-serif",
                           }}
@@ -718,47 +723,35 @@ export function FlashCard() {
                   <p
                     style={{
                       color: "#9b8c75",
-                      fontSize: 13,
+                      fontSize: 12,
                       textAlign: "center",
-                      padding: "20px 0",
+                      padding: "12px 0",
                       fontFamily: "'Segoe UI', sans-serif",
                     }}
                   >
                     All sections hidden — toggle some on below.
                   </p>
                 )}
-              </div>
 
-              {/* Bottom name bar */}
-              <div
-                style={{
-                  padding: "6px 14px",
-                  borderTop: "1px solid #e0dbd0",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  flexShrink: 0,
-                  background: "#f0ede5",
-                }}
-              >
-                <span
+                {/* Compact footer with name + flip hint */}
+                <div
                   style={{
-                    fontSize: 12,
-                    fontStyle: "italic",
-                    color: "#9b8c75",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    paddingTop: 4,
+                    marginTop: "auto",
+                    borderTop: "1px solid #e8e4dc",
+                    flexShrink: 0,
                   }}
                 >
-                  {species.scientificName}
-                </span>
-                <span
-                  style={{
-                    fontSize: 11,
-                    color: "#bbb",
-                    fontFamily: "'Segoe UI', sans-serif",
-                  }}
-                >
-                  click to flip ↻
-                </span>
+                  <span style={{ fontSize: 11, fontStyle: "italic", color: "#9b8c75" }}>
+                    {species.scientificName}
+                  </span>
+                  <span style={{ fontSize: 10, color: "#bbb", fontFamily: "'Segoe UI', sans-serif" }}>
+                    click to flip ↻
+                  </span>
+                </div>
               </div>
             </div>
           </div>
