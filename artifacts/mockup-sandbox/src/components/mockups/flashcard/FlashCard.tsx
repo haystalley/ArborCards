@@ -1,33 +1,34 @@
 import { useState } from "react";
 
-// ── Sample data (realistic mock for Red Maple & Eastern White Pine) ──────────
+// ── Sample data ───────────────────────────────────────────────────────────────
 const SAMPLE_SPECIES = [
   {
     id: "Acer_rubrum",
     commonName: "Red Maple",
     scientificName: "Acer rubrum",
-    family: "Sapindaceae",
+    family: "Aceraceae",
     tags: ["Tree", "Deciduous", "Native"],
     usda: {
       symbol: "ACRU",
       group: "Dicot",
       duration: "Perennial",
       growthHabit: "Tree",
-      nativeStatus: "L48 (N)",
+      nativeStatus: "CAN (N) | L48 (N)",
     },
     images: [
-      { descriptor: "leaf", url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=700&q=80" },
-      { descriptor: "bark", url: "https://images.unsplash.com/photo-1589494516588-f0beaf5d1e17?w=700&q=80" },
-      { descriptor: "form", url: "https://images.unsplash.com/photo-1543722530-d2c3201371e7?w=700&q=80" },
+      { descriptor: "leaf", url: "/__mockup/images/acer_rubrum/leaf.jpg" },
+      { descriptor: "bark", url: "/__mockup/images/acer_rubrum/bark.jpg" },
+      { descriptor: "form", url: "/__mockup/images/acer_rubrum/form.jpg" },
     ],
+    mapUrl: "/__mockup/images/acer_rubrum/map.jpg",
     sections: {
-      leaf: "Opposite, simple, palmately 3–5 lobed; sinuses moderately deep. Upper surface bright green, underside pale and silvery. Brilliant red-orange fall color.",
-      bark: "Young bark smooth and gray; older bark darkens with flat, scaly ridges and shallow furrows. Inner bark reddish—diagnostic.",
-      form: "Medium to large tree, 60–90 ft tall. Crown oval to rounded, often irregular. One of the most abundant and widespread eastern hardwoods.",
-      twig: "Slender, reddish, with clustered terminal buds. Leaf scars V-shaped, 3 bundle scars.",
-      flower: "Small red clusters in late winter/early spring before leaves emerge. Trees mostly dioecious.",
-      fruit: "Paired samaras (double-winged), ½–1 inch, ripening May–June—among the earliest fruits.",
-      looksLike: "Silver maple (A. saccharinum) has deeper sinuses and more silvery underside. Sugar maple (A. saccharum) has less shiny leaf and orange-red fall color without the bright red tones.",
+      leaf: "Opposite, simple, 3 to 5 palmate lobes with serrated margin, sinuses relatively shallow (but highly variable), 2 to 4 inches long; green above, whitened and sometimes glaucous or hairy beneath.",
+      bark: "On young trees, smooth and light gray; with age becomes darker and breaks up into long, fine scaly plates.",
+      form: "Medium sized tree up to 90 feet. In forest, trunk usually clear for some distance; in the open the trunk is shorter and the crown rounded.",
+      twig: "Reddish and lustrous with small lenticels; buds usually blunt, green or reddish with several loose scales; leaf scars V-shaped, 3 bundle scars; lateral buds slightly stalked.",
+      flower: "Attractive but small, occur in hanging clusters, usually bright red but occasionally yellow; appear in early spring, usually before leaves.",
+      fruit: "Clusters of ½ to ¾ inch samaras with slightly divergent wings on long slender stems; light brown and often reddish; ripen in late spring and early summer.",
+      looksLike: "silver maple — Norway maple — mapleleaf viburnum — sugar maple",
     },
   },
   {
@@ -48,6 +49,7 @@ const SAMPLE_SPECIES = [
       { descriptor: "bark", url: "https://images.unsplash.com/photo-1565127952204-ce8a01d12a51?w=700&q=80" },
       { descriptor: "form", url: "https://images.unsplash.com/photo-1523712999610-f77fbcfc3843?w=700&q=80" },
     ],
+    mapUrl: null,
     sections: {
       leaf: "Needles in fascicles of 5, 3–5 inches long, soft and flexible, blue-green with white stomatal lines on inner faces. The only eastern 5-needle pine.",
       bark: "Young bark smooth, greenish-gray. Older bark dark gray-brown with broad scaly ridges and deep furrows.",
@@ -76,6 +78,7 @@ const SAMPLE_SPECIES = [
       { descriptor: "bark", url: "https://images.unsplash.com/photo-1547234935-80c7145ec969?w=700&q=80" },
       { descriptor: "form", url: "https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=700&q=80" },
     ],
+    mapUrl: null,
     sections: {
       leaf: "Large pinnately compound leaves, 1–4 ft long with 11–41 leaflets. Each leaflet has 1–2 gland-tipped teeth near the base—key diagnostic feature. Foul odor when crushed.",
       bark: "Smooth, gray-brown, resembling ash. Older bark develops pale tan stripes and slight roughness. Light-colored inner bark.",
@@ -104,6 +107,7 @@ const SAMPLE_SPECIES = [
       { descriptor: "bark", url: "https://images.unsplash.com/photo-1476842634003-7dcca8f832de?w=700&q=80" },
       { descriptor: "form", url: "https://images.unsplash.com/photo-1490750967868-88df5691cc3e?w=700&q=80" },
     ],
+    mapUrl: null,
     sections: {
       leaf: "Simple, alternate, heart-shaped (cordate), 3–5 inches wide with entire margin. Both surfaces glabrous. Turns yellow in fall.",
       bark: "Young bark smooth, dark gray-brown. Older bark develops narrow scaly ridges and slightly orange-tinged furrows.",
@@ -501,6 +505,46 @@ export function FlashCard() {
                 />
                 <PhotoLabel label={species.images[2]?.descriptor ?? "form"} />
               </div>
+
+              {/* ── Map inset — top left overlay ── */}
+              {species.mapUrl && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: 10,
+                    left: 10,
+                    zIndex: 10,
+                    width: 112,
+                    borderRadius: 8,
+                    overflow: "hidden",
+                    boxShadow: "0 3px 12px rgba(0,0,0,0.6)",
+                    border: "1.5px solid rgba(255,255,255,0.25)",
+                    background: "#c8e6f5",
+                  }}
+                >
+                  <img
+                    src={species.mapUrl}
+                    alt="Native range map"
+                    style={{ width: "100%", display: "block" }}
+                    draggable={false}
+                  />
+                  <div
+                    style={{
+                      background: "rgba(0,0,0,0.58)",
+                      color: "#fff",
+                      fontSize: 10,
+                      textAlign: "center",
+                      padding: "3px 0",
+                      fontFamily: "'Segoe UI', sans-serif",
+                      fontWeight: 700,
+                      letterSpacing: "0.8px",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    Native Range
+                  </div>
+                </div>
+              )}
 
               {/* ── Tags — top right overlay ── */}
               <div
