@@ -197,7 +197,7 @@ export function FlashCard() {
             {/* Accent stripe */}
             <div style={{ height: 7, flexShrink: 0, background: "linear-gradient(90deg, #1b4332 0%, #2d6a4f 50%, #40916c 100%)" }} />
 
-            {/* Front body */}
+            {/* Front body — unchanged from original design */}
             <div style={{
               flex: 1, display: "flex", flexDirection: "column",
               alignItems: "center", justifyContent: "center",
@@ -230,7 +230,7 @@ export function FlashCard() {
               </div>
             </div>
 
-            {/* Hint bar */}
+            {/* Hint bar — unchanged from original design */}
             <div style={{
               padding: "12px 24px", flexShrink: 0,
               background: "#f0ede5", borderTop: "1px solid #e0dbd0",
