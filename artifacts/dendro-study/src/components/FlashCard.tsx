@@ -68,18 +68,22 @@ function PhotoCell({
   return (
     <div style={{ position: "relative", overflow: "hidden", background: "#0a0a0a", ...style }}>
       <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        {url && show ? (
+        {/* Show image only when url exists and show is true */}
+        {url && show && (
           <img src={url} alt={label} draggable={false}
             style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain", display: "block" }} />
-        ) : (
+        )}
+        {/* "No image" placeholder only when show is true but no url — preserves labeled space */}
+        {!url && show && (
           <span style={{
             fontSize: 10, color: "rgba(255,255,255,0.18)",
             fontFamily: "'Segoe UI', sans-serif", letterSpacing: "0.8px",
             textTransform: "uppercase",
           }}>
-            {!url ? "No image" : ""}
+            No image
           </span>
         )}
+        {/* When show is false: slot stays same size, content is blank (nothing rendered) */}
       </div>
       <PhotoLabel text={label} />
     </div>
