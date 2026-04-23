@@ -42,7 +42,7 @@ jobs:
       - name: Build dendro-study for GitHub Pages
         env:
           NODE_ENV: production
-          BASE_PATH: /dendro-cards/
+          BASE_PATH: /ArborCards/
           PORT: "3000"
         run: pnpm --filter @workspace/dendro-study build
 
