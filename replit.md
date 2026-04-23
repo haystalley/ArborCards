@@ -80,7 +80,7 @@ SpeciesData:  { id, commonName, scientificName, family, tags, description,
 ```
 Images use relative paths like `Acer_rubrum/Acer_rubrum_leaf.jpg` (resolved against base URL at runtime).
 
-**Deploy to GitHub Pages (repo: `dendro-cards`)**
+**Deploy to GitHub Pages (repo: `ArborCards`)**
 
 CI/CD is wired via `.github/workflows/deploy.yml` — every push to `main` triggers an automatic deploy.
 
@@ -90,9 +90,9 @@ One-time setup steps (do once in GitHub):
 
 Build command (for manual local build):
 ```bash
-PORT=3000 BASE_PATH=/dendro-cards/ NODE_ENV=production \
+PORT=3000 BASE_PATH=/ArborCards/ NODE_ENV=production \
   pnpm --filter @workspace/dendro-study build
 # Output: artifacts/dendro-study/dist/public/
 ```
 
-Live URL after deploy: `https://<username>.github.io/dendro-cards/`
+Live URL after deploy: `https://haystalley.github.io/ArborCards/`
