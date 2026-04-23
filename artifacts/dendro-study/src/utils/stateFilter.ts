@@ -37,7 +37,7 @@ interface StatusSegment {
 function parseSegments(nativeStatus: string): StatusSegment[] {
   if (!nativeStatus) return [];
   const result: StatusSegment[] = [];
-  for (const part of nativeStatus.split(",").map((p) => p.trim())) {
+  for (const part of nativeStatus.split(/[,|]/).map((p) => p.trim())) {
     const m = part.match(/^([A-Z0-9]+)\s*\(([A-Z?]+)\)/);
     if (m) result.push({ code: m[1], status: m[2] });
   }
@@ -69,11 +69,23 @@ export function speciesNativeInState(species: SpeciesData, stateAbbr: string): b
   );
 }
 
-/** Is the species invasive or waif (I or W) in the given state? */
+/** Is the species invasive (I, I? or W) in the given state? */
 export function speciesInvasiveInState(species: SpeciesData, stateAbbr: string): boolean {
   return parseSegments(species.usda.nativeStatus).some(
     ({ code, status }) =>
-      (status === "I" || status === "W") && coversState(code, stateAbbr)
+      (status === "I" || status === "I?" || status === "W") && coversState(code, stateAbbr)
+  );
+}
+
+/**
+ * Is the species invasive (I or I?) in the given USDA region code?
+ * Region codes: L48, CAN, HI, PR, PB, VI, AK — matched directly (no state expansion).
+ * Uses I and I? only (not W/waif) to match official invasive species counts.
+ */
+export function speciesInvasiveInRegion(species: SpeciesData, regionCode: string): boolean {
+  return parseSegments(species.usda.nativeStatus).some(
+    ({ code, status }) =>
+      code === regionCode && (status === "I" || status === "I?")
   );
 }
 

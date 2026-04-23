@@ -5,17 +5,18 @@ import type { SpeciesData, Deck } from "@/data/types";
 
 interface Props {
   species: SpeciesData[];
+  syllabusIds?: Set<string>;
   onSelectDeck: (deck: Deck, filtered: SpeciesData[]) => void;
 }
 
-export function HomePage({ species, onSelectDeck }: Props) {
+export function HomePage({ species, syllabusIds, onSelectDeck }: Props) {
   const [decks, setDecks] = useState<Deck[]>([]);
   const [hovered, setHovered] = useState<string | null>(null);
   const [, navigate] = useLocation();
 
   useEffect(() => {
-    setDecks(buildDecks(species));
-  }, [species]);
+    setDecks(buildDecks(species, syllabusIds));
+  }, [species, syllabusIds]);
 
   function handleSelect(deck: Deck) {
     const filtered = deck.filter(species);
@@ -152,6 +153,14 @@ function DeckCard({
           }}>
             {deck.title}
           </div>
+          {deck.subtitle && (
+            <div style={{
+              color: "#74c69d", fontSize: 11, fontWeight: 500,
+              marginTop: 1, fontStyle: "italic",
+            }}>
+              {deck.subtitle}
+            </div>
+          )}
           <div style={{
             color: "#40916c", fontSize: 11, fontWeight: 700,
             marginTop: 2,

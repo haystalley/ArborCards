@@ -71,6 +71,7 @@ export const DEFAULT_VISIBILITY: VisibilitySettings = {
 export interface Deck {
   id: string;
   title: string;
+  subtitle?: string;
   description: string;
   icon: string;
   filter: (species: SpeciesData[]) => SpeciesData[];

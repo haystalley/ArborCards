@@ -19,22 +19,28 @@ function loadVis(): VisibilitySettings {
 
 function App() {
   const [species, setSpecies] = useState<SpeciesData[]>([]);
+  const [syllabusIds, setSyllabusIds] = useState<Set<string>>(new Set());
   const [activeDeck, setActiveDeck] = useState<Deck | null>(null);
   const [deckCards, setDeckCards] = useState<SpeciesData[]>([]);
   const [vis, setVis] = useState<VisibilitySettings>(loadVis);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Load species data from public/data/species_data.json
+  // Load species data and VT syllabus IDs in parallel
   useEffect(() => {
     const base = import.meta.env.BASE_URL ?? "/";
-    const url = `${base}data/species_data.json`.replace(/\/+/g, "/");
-    fetch(url)
-      .then((r) => {
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        return r.json();
+    const speciesUrl = `${base}data/species_data.json`.replace(/\/+/g, "/");
+    const syllabusUrl = `${base}data/vt_syllabus_ids.json`.replace(/\/+/g, "/");
+
+    Promise.all([
+      fetch(speciesUrl).then((r) => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json() as Promise<SpeciesData[]>; }),
+      fetch(syllabusUrl).then((r) => r.ok ? r.json() as Promise<number[]> : Promise.resolve([])).catch(() => [] as number[]),
+    ])
+      .then(([speciesData, ids]) => {
+        setSpecies(speciesData);
+        setSyllabusIds(new Set(ids.map(String)));
+        setLoading(false);
       })
-      .then((data: SpeciesData[]) => { setSpecies(data); setLoading(false); })
       .catch((e) => { setError(String(e)); setLoading(false); });
   }, []);
 
@@ -55,7 +61,7 @@ function App() {
     <WouterRouter base={import.meta.env.BASE_URL?.replace(/\/$/, "") ?? ""}>
       <Switch>
         <Route path="/">
-          <HomePage species={species} onSelectDeck={handleSelectDeck} />
+          <HomePage species={species} syllabusIds={syllabusIds} onSelectDeck={handleSelectDeck} />
         </Route>
         <Route path="/study">
           <StudyPage

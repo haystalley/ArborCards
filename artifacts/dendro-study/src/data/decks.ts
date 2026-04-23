@@ -1,28 +1,99 @@
 import type { Deck, SpeciesData } from "./types";
+import { speciesInvasiveInRegion } from "@/utils/stateFilter";
 
-export function buildDecks(all: SpeciesData[]): Deck[] {
+const FAMILY_COMMON_NAMES: Record<string, string> = {
+  Rosaceae: "Rose / Apple / Cherry",
+  Pinaceae: "Pine / Fir / Spruce",
+  Fagaceae: "Oak / Beech / Chestnut",
+  Ericaceae: "Heath / Blueberry",
+  Fabaceae: "Locust / Redbud",
+  Caprifoliaceae: "Honeysuckle / Elderberry",
+  Cupressaceae: "Cypress / Juniper",
+  Salicaceae: "Willow / Poplar",
+  Betulaceae: "Birch / Alder",
+  Oleaceae: "Ash / Privet",
+  Anacardiaceae: "Sumac",
+  Cactaceae: "Cactus",
+  Aceraceae: "Maple",
+  Juglandaceae: "Walnut / Hickory",
+  Cornaceae: "Dogwood",
+  Arecaceae: "Palm",
+  Magnoliaceae: "Magnolia",
+  Ulmaceae: "Elm",
+  Platanaceae: "Sycamore",
+  Taxaceae: "Yew",
+};
+
+export function buildDecks(all: SpeciesData[], syllabusIds?: Set<string>): Deck[] {
   const decks: Deck[] = [
     {
-      id: "vt-syllabus",
-      title: "VT Syllabus",
-      description: "All species in the Virginia Tech Dendrology database",
-      icon: "🎓",
+      id: "all-species",
+      title: "All Species",
+      description: "Every species in the Virginia Tech Dendrology database",
+      icon: "🌳",
       filter: (s) => s,
     },
     {
-      id: "na-invasives",
-      title: "North America Invasives",
-      description: "Non-native invasive and introduced species in North America",
+      id: "vt-syllabus",
+      title: "VT Syllabus",
+      description: "Species covered in VT's Dendrology course syllabus",
+      icon: "🎓",
+      filter: (s) => {
+        if (!syllabusIds || syllabusIds.size === 0) return s;
+        return s.filter((sp) => {
+          const m = sp.sourceUrl && sp.sourceUrl.match(/ID=(\d+)/i);
+          return m ? syllabusIds.has(m[1]) : false;
+        });
+      },
+    },
+    {
+      id: "invasives-l48",
+      title: "Invasives · Lower 48",
+      description: "Non-native invasive species in the contiguous United States",
       icon: "⚠️",
-      filter: (s) =>
-        s.filter((sp) =>
-          sp.tags.some(
-            (t) =>
-              t.toLowerCase() === "invasive" ||
-              t.toLowerCase().includes("introduced") ||
-              t.toLowerCase().includes("planted")
-          )
-        ),
+      filter: (s) => s.filter((sp) => speciesInvasiveInRegion(sp, "L48")),
+    },
+    {
+      id: "invasives-can",
+      title: "Invasives · Canada",
+      description: "Non-native invasive species in Canada",
+      icon: "⚠️",
+      filter: (s) => s.filter((sp) => speciesInvasiveInRegion(sp, "CAN")),
+    },
+    {
+      id: "invasives-hi",
+      title: "Invasives · Hawaii",
+      description: "Non-native invasive species in Hawaii",
+      icon: "⚠️",
+      filter: (s) => s.filter((sp) => speciesInvasiveInRegion(sp, "HI")),
+    },
+    {
+      id: "invasives-pr",
+      title: "Invasives · Puerto Rico",
+      description: "Non-native invasive species in Puerto Rico",
+      icon: "⚠️",
+      filter: (s) => s.filter((sp) => speciesInvasiveInRegion(sp, "PR")),
+    },
+    {
+      id: "invasives-pb",
+      title: "Invasives · Pacific Islands",
+      description: "Non-native invasive species in U.S. Pacific Islands",
+      icon: "⚠️",
+      filter: (s) => s.filter((sp) => speciesInvasiveInRegion(sp, "PB")),
+    },
+    {
+      id: "invasives-vi",
+      title: "Invasives · Virgin Islands",
+      description: "Non-native invasive species in the U.S. Virgin Islands",
+      icon: "⚠️",
+      filter: (s) => s.filter((sp) => speciesInvasiveInRegion(sp, "VI")),
+    },
+    {
+      id: "invasives-ak",
+      title: "Invasives · Alaska",
+      description: "Non-native invasive species in Alaska",
+      icon: "⚠️",
+      filter: (s) => s.filter((sp) => speciesInvasiveInRegion(sp, "AK")),
     },
     {
       id: "deciduous-trees",
@@ -46,13 +117,13 @@ export function buildDecks(all: SpeciesData[]): Deck[] {
       description: "Needle-bearing conifers and cone-producing evergreen trees",
       icon: "🌲",
       filter: (s) =>
-        s.filter((sp) =>
-          sp.tags.some(
-            (t) =>
-              t.toLowerCase().includes("conifer") ||
-              t.toLowerCase().includes("evergreen")
-          ) ||
-          sp.usda.group.toLowerCase().includes("gymnosperm")
+        s.filter(
+          (sp) =>
+            sp.tags.some(
+              (t) =>
+                t.toLowerCase().includes("conifer") ||
+                t.toLowerCase().includes("evergreen")
+            ) || sp.usda.group.toLowerCase().includes("gymnosperm")
         ),
     },
     {
@@ -73,7 +144,7 @@ export function buildDecks(all: SpeciesData[]): Deck[] {
     },
   ];
 
-  // Family decks for families with ≥2 species
+  // Family decks — sorted largest first, with common name subtitles
   const families: Record<string, SpeciesData[]> = {};
   all.forEach((sp) => {
     if (!families[sp.family]) families[sp.family] = [];
@@ -82,11 +153,13 @@ export function buildDecks(all: SpeciesData[]): Deck[] {
 
   Object.entries(families)
     .filter(([, members]) => members.length >= 2)
-    .sort(([a], [b]) => a.localeCompare(b))
+    .sort(([, a], [, b]) => b.length - a.length)
     .forEach(([family]) => {
+      const commonName = FAMILY_COMMON_NAMES[family];
       decks.push({
         id: `family-${family.toLowerCase().replace(/\s+/g, "-")}`,
-        title: `Family: ${family}`,
+        title: family,
+        subtitle: commonName,
         description: `Species in the ${family} family`,
         icon: "🔬",
         filter: (s) => s.filter((sp) => sp.family === family),
