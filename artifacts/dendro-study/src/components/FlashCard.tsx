@@ -1,4 +1,5 @@
 import type { SpeciesData, VisibilitySettings } from "@/data/types";
+import { imgUrl } from "@/config";
 
 // ── Tag colour map ────────────────────────────────────────────────────────────
 function tagStyle(tag: string): { bg: string; text: string; border: string } {
@@ -101,7 +102,7 @@ interface Props {
 export function FlashCard({ species, flipped, onFlip, vis }: Props) {
   // Resolve images by alt text keyword (e.g. "leaf", "bark", "form")
   const findImg = (key: string) =>
-    species.images.find((i) => i.alt.toLowerCase().includes(key.toLowerCase()))?.file ?? null;
+    imgUrl(species.images.find((i) => i.alt.toLowerCase().includes(key.toLowerCase()))?.file);
 
   const leafImg  = findImg("leaf");
   const barkImg  = findImg("bark");
@@ -229,7 +230,7 @@ export function FlashCard({ species, flipped, onFlip, vis }: Props) {
             visibility: species.mapImage ? "visible" : "hidden",
           }}>
             <img
-              src={species.mapImage ?? ""}
+              src={imgUrl(species.mapImage) ?? ""}
               alt="Native range map"
               style={{ width: "100%", display: "block", opacity: V.back.rangeMap ? 1 : 0 }}
               draggable={false}
