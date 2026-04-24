@@ -372,9 +372,42 @@ export function FlashCard({ species, flipped, onFlip, vis }: Props) {
               <span style={{ fontSize: 10.5, fontStyle: "italic", color: "#9b8c75" }}>
                 {species.scientificName}
               </span>
-              <span style={{ fontSize: 9.5, color: "#bbb", fontFamily: "'Segoe UI', sans-serif" }}>
-                click to flip ↻
-              </span>
+
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                {species.sourceUrl && (
+                  <a
+                    href={species.sourceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    title="Open VT Dendrology factsheet"
+                    style={{
+                      fontSize: 10, color: "#2d6a4f",
+                      textDecoration: "none",
+                      border: "1px solid rgba(45,106,79,0.3)",
+                      borderRadius: 6, padding: "2px 7px",
+                      fontFamily: "'Segoe UI', sans-serif",
+                      fontWeight: 600,
+                      display: "flex", alignItems: "center", gap: 3,
+                      background: "rgba(45,106,79,0.06)",
+                      transition: "all 0.12s",
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLAnchorElement).style.background = "rgba(45,106,79,0.15)";
+                      (e.currentTarget as HTMLAnchorElement).style.borderColor = "rgba(45,106,79,0.6)";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLAnchorElement).style.background = "rgba(45,106,79,0.06)";
+                      (e.currentTarget as HTMLAnchorElement).style.borderColor = "rgba(45,106,79,0.3)";
+                    }}
+                  >
+                    📄 Factsheet ↗
+                  </a>
+                )}
+                <span style={{ fontSize: 9.5, color: "#bbb", fontFamily: "'Segoe UI', sans-serif" }}>
+                  click to flip ↻
+                </span>
+              </div>
             </div>
           </div>
         </div>

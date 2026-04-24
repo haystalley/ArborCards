@@ -4,6 +4,7 @@ import { useHashLocation } from "wouter/use-hash-location";
 import type { SpeciesData, Deck, VisibilitySettings } from "@/data/types";
 import { DEFAULT_VISIBILITY } from "@/data/types";
 import { HomePage } from "@/pages/HomePage";
+import { SetupPage } from "@/pages/SetupPage";
 import { StudyPage } from "@/pages/StudyPage";
 import { MapView } from "@/pages/MapView";
 import NotFound from "@/pages/not-found";
@@ -71,6 +72,14 @@ function App() {
       <Switch>
         <Route path="/">
           <HomePage species={species} syllabusIds={syllabusIds} onSelectDeck={handleSelectDeck} />
+        </Route>
+        <Route path="/setup">
+          <SetupPage
+            deck={activeDeck}
+            cards={deckCards}
+            vis={vis}
+            onVisChange={setVis}
+          />
         </Route>
         <Route path="/study">
           <StudyPage

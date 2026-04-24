@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useLocation } from "wouter";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -8,6 +8,7 @@ import {
   STATE_ABBR_TO_NAME,
   stateDeckCounts,
 } from "@/utils/stateFilter";
+import { STATE_MARQUEE } from "@/data/marqueeSpecies";
 
 // ── Style constants ──────────────────────────────────────────────────────────
 const STYLE_DEFAULT: L.PathOptions = {
@@ -48,10 +49,10 @@ export function MapView({ species, onSelectDeck }: Props) {
       .catch(console.error);
   }, []);
 
-  // Init Leaflet map imperatively (avoids react-leaflet complexity in this context)
+  // Init Leaflet map imperatively
   useEffect(() => {
     if (!geoData) return;
-    if (mapRef.current) return; // already initialised
+    if (mapRef.current) return;
 
     const container = document.getElementById("dendro-map");
     if (!container) return;
@@ -66,7 +67,6 @@ export function MapView({ species, onSelectDeck }: Props) {
     });
     mapRef.current = map;
 
-    // CartoDB DarkMatter tile layer
     L.tileLayer(
       "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
       {
@@ -77,7 +77,6 @@ export function MapView({ species, onSelectDeck }: Props) {
       }
     ).addTo(map);
 
-    // GeoJSON layer
     L.geoJSON(geoData as Parameters<typeof L.geoJSON>[0], {
       style: () => ({ ...STYLE_DEFAULT }),
       onEachFeature(feature, layer) {
@@ -97,7 +96,6 @@ export function MapView({ species, onSelectDeck }: Props) {
           }
         });
         layer.on("click", () => {
-          // Reset previous selection
           if (selectedRef.current && selectedRef.current !== name) {
             const prev = layersRef.current.get(selectedRef.current);
             if (prev) prev.setStyle({ ...STYLE_DEFAULT });
@@ -117,7 +115,6 @@ export function MapView({ species, onSelectDeck }: Props) {
     };
   }, [geoData]);
 
-  // Close panel and reset selection
   function closePanel() {
     if (selectedRef.current) {
       const prev = layersRef.current.get(selectedRef.current);
@@ -127,14 +124,20 @@ export function MapView({ species, onSelectDeck }: Props) {
     setSelectedStateName(null);
   }
 
-  // Compute deck counts for selected state
   const stateAbbr = selectedStateName
     ? (STATE_NAME_TO_ABBR[selectedStateName] ?? null)
     : null;
 
-  const counts = stateAbbr
-    ? stateDeckCounts(species, stateAbbr)
-    : null;
+  const counts = stateAbbr ? stateDeckCounts(species, stateAbbr) : null;
+
+  // Marquee species: cross-reference curated list with actual data
+  const marqueeSpecies = stateAbbr
+    ? (STATE_MARQUEE[stateAbbr] ?? [])
+        .map((sciName) =>
+          species.find((sp) => sp.scientificName.toLowerCase() === sciName.toLowerCase())
+        )
+        .filter(Boolean) as SpeciesData[]
+    : [];
 
   function startDeck(
     title: string,
@@ -151,7 +154,7 @@ export function MapView({ species, onSelectDeck }: Props) {
       filter: (s) => s.filter((sp) => cards.includes(sp)),
     };
     onSelectDeck(deck, cards);
-    navigate("/study");
+    navigate("/setup");
   }
 
   return (
@@ -207,7 +210,7 @@ export function MapView({ species, onSelectDeck }: Props) {
       {/* ── State selection panel (right side slide-in) ── */}
       <div style={{
         position: "absolute", top: 0, right: 0, bottom: 0, zIndex: 1001,
-        width: 300,
+        width: 310,
         background: "linear-gradient(180deg, #0d2b1e 0%, #1b4332 100%)",
         borderLeft: "1px solid rgba(149,213,178,0.15)",
         boxShadow: "-8px 0 32px rgba(0,0,0,0.6)",
@@ -251,58 +254,90 @@ export function MapView({ species, onSelectDeck }: Props) {
                   ✕
                 </button>
               </div>
-            </div>
 
-            {/* Deck options — only when we have state data */}
-            {counts && <div style={{ flex: 1, overflowY: "auto", padding: "10px 12px" }}>
-              <div style={{ marginBottom: 10 }}>
-                <div style={{ color: "#40916c", fontSize: 10, fontWeight: 800, letterSpacing: "1.5px", textTransform: "uppercase", fontFamily: "'Segoe UI', sans-serif", marginBottom: 8, paddingLeft: 4 }}>
-                  Choose a deck
-                </div>
-
-                <DeckOption
-                  icon="🌿" label={`All species · ${selectedStateName}`}
-                  count={counts.all.length}
-                  onClick={() => startDeck(`All Species · ${selectedStateName}`, "🌿", counts.all, `map-all-${stateAbbr}`)}
-                />
-                <DeckOption
-                  icon="🌱" label={`Natives · ${selectedStateName}`}
-                  count={counts.natives.length}
-                  onClick={() => startDeck(`Natives · ${selectedStateName}`, "🌱", counts.natives, `map-native-${stateAbbr}`)}
-                />
-                <DeckOption
-                  icon="⚠️" label={`Invasives · ${selectedStateName}`}
-                  count={counts.invasives.length}
-                  onClick={() => startDeck(`Invasives · ${selectedStateName}`, "⚠️", counts.invasives, `map-invasive-${stateAbbr}`)}
-                />
-              </div>
-
-              {/* Family breakdown */}
-              {counts.byFamily.length > 0 && (
-                <div>
-                  <div style={{ color: "#40916c", fontSize: 10, fontWeight: 800, letterSpacing: "1.5px", textTransform: "uppercase", fontFamily: "'Segoe UI', sans-serif", marginBottom: 8, paddingLeft: 4, paddingTop: 4, borderTop: "1px solid rgba(64,145,108,0.2)" }}>
-                    By Family
+              {/* Marquee species chips */}
+              {marqueeSpecies.length > 0 && (
+                <div style={{ marginTop: 12 }}>
+                  <div style={{
+                    fontSize: 9, fontWeight: 800, letterSpacing: "1.5px", textTransform: "uppercase",
+                    color: "#40916c", fontFamily: "'Segoe UI', sans-serif", marginBottom: 6,
+                  }}>
+                    Marquee Species
                   </div>
-                  {counts.byFamily.map(({ family, species: fsp }) => (
-                    <DeckOption
-                      key={family}
-                      icon="🔬"
-                      label={family}
-                      count={fsp.length}
-                      onClick={() => startDeck(`${family} · ${selectedStateName}`, "🔬", fsp, `map-family-${family}-${stateAbbr}`)}
-                    />
-                  ))}
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+                    {marqueeSpecies.map((sp) => (
+                      <div
+                        key={sp.id}
+                        title={sp.scientificName}
+                        style={{
+                          background: "rgba(64,145,108,0.15)",
+                          border: "1px solid rgba(64,145,108,0.3)",
+                          borderRadius: 8, padding: "3px 9px",
+                          fontSize: 11, color: "#95d5b2",
+                          fontFamily: "'Segoe UI', sans-serif",
+                          cursor: "default",
+                        }}
+                      >
+                        {sp.commonName}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
-            </div>}
+            </div>
+
+            {/* Deck options */}
+            {counts && (
+              <div style={{ flex: 1, overflowY: "auto", padding: "10px 12px" }}>
+                <div style={{ marginBottom: 10 }}>
+                  <div style={{ color: "#40916c", fontSize: 10, fontWeight: 800, letterSpacing: "1.5px", textTransform: "uppercase", fontFamily: "'Segoe UI', sans-serif", marginBottom: 8, paddingLeft: 4 }}>
+                    Choose a deck
+                  </div>
+
+                  <DeckOption
+                    icon="🌿" label={`All species · ${selectedStateName}`}
+                    count={counts.all.length}
+                    onClick={() => startDeck(`All Species · ${selectedStateName}`, "🌿", counts.all, `map-all-${stateAbbr}`)}
+                  />
+                  <DeckOption
+                    icon="🌱" label={`Natives · ${selectedStateName}`}
+                    count={counts.natives.length}
+                    onClick={() => startDeck(`Natives · ${selectedStateName}`, "🌱", counts.natives, `map-native-${stateAbbr}`)}
+                  />
+                  <DeckOption
+                    icon="⚠️" label={`Invasives · ${selectedStateName}`}
+                    count={counts.invasives.length}
+                    onClick={() => startDeck(`Invasives · ${selectedStateName}`, "⚠️", counts.invasives, `map-invasive-${stateAbbr}`)}
+                  />
+                </div>
+
+                {/* Family breakdown */}
+                {counts.byFamily.length > 0 && (
+                  <div>
+                    <div style={{ color: "#40916c", fontSize: 10, fontWeight: 800, letterSpacing: "1.5px", textTransform: "uppercase", fontFamily: "'Segoe UI', sans-serif", marginBottom: 8, paddingLeft: 4, paddingTop: 4, borderTop: "1px solid rgba(64,145,108,0.2)" }}>
+                      By Family
+                    </div>
+                    {counts.byFamily.map(({ family, species: fsp }) => (
+                      <DeckOption
+                        key={family}
+                        icon="🔬"
+                        label={family}
+                        count={fsp.length}
+                        onClick={() => startDeck(`${family} · ${selectedStateName}`, "🔬", fsp, `map-family-${family}-${stateAbbr}`)}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </>
         )}
       </div>
 
-      {/* Dismiss overlay when panel is open and user clicks map */}
+      {/* Dismiss overlay */}
       {selectedStateName && (
         <div
-          style={{ position: "absolute", inset: 0, zIndex: 500, right: 300 }}
+          style={{ position: "absolute", inset: 0, zIndex: 500, right: 310 }}
           onClick={closePanel}
         />
       )}
