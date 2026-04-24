@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Switch, Route, Router as WouterRouter } from "wouter";
+import { useHashLocation } from "wouter/use-hash-location";
 import type { SpeciesData, Deck, VisibilitySettings } from "@/data/types";
 import { DEFAULT_VISIBILITY } from "@/data/types";
 import { HomePage } from "@/pages/HomePage";
@@ -66,7 +67,7 @@ function App() {
   if (error)   return <LoadScreen text={`Error: ${error}`} isError />;
 
   return (
-    <WouterRouter base={import.meta.env.BASE_URL?.replace(/\/$/, "") ?? ""}>
+    <WouterRouter hook={useHashLocation}>
       <Switch>
         <Route path="/">
           <HomePage species={species} syllabusIds={syllabusIds} onSelectDeck={handleSelectDeck} />

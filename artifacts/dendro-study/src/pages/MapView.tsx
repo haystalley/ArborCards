@@ -151,7 +151,7 @@ export function MapView({ species, onSelectDeck }: Props) {
       filter: (s) => s.filter((sp) => cards.includes(sp)),
     };
     onSelectDeck(deck, cards);
-    navigate("~/study");
+    navigate("/study");
   }
 
   return (
@@ -161,7 +161,7 @@ export function MapView({ species, onSelectDeck }: Props) {
     }}>
       {/* ── Back button ── */}
       <button
-        onClick={() => navigate("~/")}
+        onClick={() => navigate("/")}
         style={{
           position: "absolute", top: 16, left: 16, zIndex: 1000,
           background: "rgba(13,43,30,0.92)", border: "1px solid rgba(149,213,178,0.25)",

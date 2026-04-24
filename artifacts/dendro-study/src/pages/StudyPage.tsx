@@ -19,7 +19,7 @@ export function StudyPage({ deck, cards, vis, onVisChange }: Props) {
 
   // Build shuffled order when cards change
   useEffect(() => {
-    if (cards.length === 0) { navigate("~/"); return; }
+    if (cards.length === 0) { navigate("/"); return; }
     const arr = Array.from({ length: cards.length }, (_, i) => i);
     // Fisher-Yates shuffle
     for (let i = arr.length - 1; i > 0; i--) {
@@ -69,7 +69,7 @@ export function StudyPage({ deck, cards, vis, onVisChange }: Props) {
       }}>
         {/* Back button */}
         <button
-          onClick={() => navigate("~/")}
+          onClick={() => navigate("/")}
           style={{
             background: "rgba(255,255,255,0.08)", border: "1px solid rgba(149,213,178,0.2)",
             color: "#95d5b2", borderRadius: 10, padding: "8px 14px",

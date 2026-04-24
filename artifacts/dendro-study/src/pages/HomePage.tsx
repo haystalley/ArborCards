@@ -22,7 +22,7 @@ export function HomePage({ species, syllabusIds, onSelectDeck }: Props) {
     const filtered = deck.filter(species);
     if (filtered.length === 0) return; // grey out empty decks silently
     onSelectDeck(deck, filtered);
-    navigate("~/study");
+    navigate("/study");
   }
 
   const families = [...new Set(decks.filter(d => d.id.startsWith("family-")).map(d => d.id))];
@@ -51,7 +51,7 @@ export function HomePage({ species, syllabusIds, onSelectDeck }: Props) {
 
       {/* Study from Map button — active */}
       <div style={{ maxWidth: 960, margin: "0 auto 32px", display: "flex", justifyContent: "center" }}>
-        <MapButton onClick={() => navigate("~/map")} />
+        <MapButton onClick={() => navigate("/map")} />
       </div>
 
       {/* Preset deck grid */}
