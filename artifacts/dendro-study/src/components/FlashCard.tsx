@@ -27,15 +27,15 @@ function DescRow({
   return (
     <div style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
       <span style={{
-        fontSize: 9, fontFamily: "'Segoe UI', sans-serif", fontWeight: 800,
+        fontSize: 10.5, fontFamily: "'Segoe UI', sans-serif", fontWeight: 800,
         textTransform: "uppercase" as const, letterSpacing: "0.8px",
-        color: accent, minWidth: 56, flexShrink: 0, paddingTop: 1,
+        color: accent, minWidth: 62, flexShrink: 0, paddingTop: 1,
         borderLeft: `3px solid ${accent}`, paddingLeft: 5, lineHeight: 1.5,
       }}>
         {label}
       </span>
       <p style={{
-        fontSize: 10.5, lineHeight: 1.4, margin: 0, flex: 1,
+        fontSize: 12, lineHeight: 1.4, margin: 0, flex: 1,
         fontFamily: "'Segoe UI', sans-serif",
         color: show ? "#2a2a22" : "transparent",
         minHeight: "1em",
@@ -52,7 +52,7 @@ function PhotoLabel({ text }: { text: string }) {
     <div style={{
       position: "absolute", bottom: 5, left: 7, zIndex: 2,
       background: "rgba(0,0,0,0.58)", backdropFilter: "blur(3px)",
-      color: "#fff", fontSize: 10, padding: "2px 8px", borderRadius: 10,
+      color: "#fff", fontSize: 11.5, padding: "3px 9px", borderRadius: 10,
       fontFamily: "'Segoe UI', sans-serif", fontWeight: 700,
       letterSpacing: "0.8px", textTransform: "uppercase",
     }}>
@@ -155,21 +155,21 @@ export function FlashCard({ species, flipped, onFlip, vis }: Props) {
           <div style={{ fontSize: 72, opacity: 0.06, position: "absolute", pointerEvents: "none" }}>🌿</div>
 
           <p style={{
-            color: "#9b8c75", fontSize: 12, letterSpacing: "2px",
+            color: "#9b8c75", fontSize: 13, letterSpacing: "2px",
             textTransform: "uppercase", fontFamily: "'Segoe UI', sans-serif", marginBottom: 16,
             visibility: V.front.family ? "visible" : "hidden",
           }}>
             {species.family}
           </p>
           <h1 style={{
-            fontSize: 46, fontWeight: "bold", color: "#1b4332",
+            fontSize: 52, fontWeight: "bold", color: "#1b4332",
             lineHeight: 1.1, marginBottom: 14, textShadow: "0 1px 3px rgba(0,0,0,0.06)",
             visibility: V.front.commonName ? "visible" : "hidden",
           }}>
             {species.commonName}
           </h1>
           <p style={{
-            fontSize: 21, fontStyle: "italic", color: "#6b6658", lineHeight: 1.3,
+            fontSize: 23, fontStyle: "italic", color: "#6b6658", lineHeight: 1.3,
             visibility: V.front.scientificName ? "visible" : "hidden",
           }}>
             {species.scientificName}
@@ -184,7 +184,7 @@ export function FlashCard({ species, flipped, onFlip, vis }: Props) {
               return (
                 <span key={tag} style={{
                   background: s.bg, color: s.text, border: `1px solid ${s.border}`,
-                  padding: "5px 14px", borderRadius: 20, fontSize: 12,
+                  padding: "6px 16px", borderRadius: 20, fontSize: 13,
                   fontFamily: "'Segoe UI', sans-serif", fontWeight: 700,
                   letterSpacing: "0.6px", textTransform: "uppercase",
                 }}>{tag}</span>
@@ -296,19 +296,19 @@ export function FlashCard({ species, flipped, onFlip, vis }: Props) {
             ] as [string, string][]).map(([label, value], i, arr) => (
               <div key={label} style={{
                 flex: label === "Range" ? 2 : 1,
-                padding: "5px 5px",
+                padding: "6px 5px",
                 borderRight: i < arr.length - 1 ? "1px solid #d6d1c5" : "none",
                 textAlign: "center",
               }}>
                 <div style={{
-                  fontSize: 7.5, fontFamily: "'Segoe UI', sans-serif",
+                  fontSize: 9, fontFamily: "'Segoe UI', sans-serif",
                   fontWeight: 800, textTransform: "uppercase",
                   letterSpacing: "0.6px", color: "#9b8c75", marginBottom: 1,
                 }}>
                   {label}
                 </div>
                 <div style={{
-                  fontSize: 10.5, color: V.back.metadata ? "#1a1a14" : "transparent",
+                  fontSize: 12, color: V.back.metadata ? "#1a1a14" : "transparent",
                   fontFamily: "'Segoe UI', sans-serif", fontWeight: 500, lineHeight: 1.2,
                   minHeight: "1em",
                 }}>
@@ -342,14 +342,14 @@ export function FlashCard({ species, flipped, onFlip, vis }: Props) {
               ] as [string, string, keyof typeof vis.back][]).map(([key, text, visKey]) => (
                 <div key={key} style={{ overflow: "hidden" }}>
                   <div style={{
-                    fontSize: 8, fontFamily: "'Segoe UI', sans-serif",
+                    fontSize: 10, fontFamily: "'Segoe UI', sans-serif",
                     fontWeight: 800, textTransform: "uppercase",
                     letterSpacing: "0.7px", color: "#9b8c75", marginBottom: 2,
                   }}>
                     {key.charAt(0).toUpperCase() + key.slice(1)}
                   </div>
                   <p style={{
-                    fontSize: 10, lineHeight: 1.35, margin: 0,
+                    fontSize: 11.5, lineHeight: 1.35, margin: 0,
                     fontFamily: "'Segoe UI', sans-serif",
                     color: V.back[visKey] ? "#4a4a3a" : "transparent",
                     overflow: "hidden",
@@ -367,9 +367,9 @@ export function FlashCard({ species, flipped, onFlip, vis }: Props) {
             {/* Footer */}
             <div style={{
               display: "flex", justifyContent: "space-between", alignItems: "center",
-              paddingTop: 4, borderTop: "1px solid #e4e0d6", flexShrink: 0,
+              paddingTop: 5, borderTop: "1px solid #e4e0d6", flexShrink: 0,
             }}>
-              <span style={{ fontSize: 10.5, fontStyle: "italic", color: "#9b8c75" }}>
+              <span style={{ fontSize: 12, fontStyle: "italic", color: "#9b8c75" }}>
                 {species.scientificName}
               </span>
 
@@ -382,7 +382,7 @@ export function FlashCard({ species, flipped, onFlip, vis }: Props) {
                     onClick={(e) => e.stopPropagation()}
                     title="Open VT Dendrology factsheet"
                     style={{
-                      fontSize: 10, color: "#2d6a4f",
+                      fontSize: 11.5, color: "#2d6a4f",
                       textDecoration: "none",
                       border: "1px solid rgba(45,106,79,0.3)",
                       borderRadius: 6, padding: "2px 7px",

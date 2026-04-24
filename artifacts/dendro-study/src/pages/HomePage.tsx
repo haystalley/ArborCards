@@ -52,7 +52,36 @@ export function HomePage({ species, syllabusIds, onSelectDeck }: Props) {
       fontFamily: "'Segoe UI', sans-serif",
     }}>
       {/* Header */}
-      <div style={{ maxWidth: 960, margin: "0 auto 44px", textAlign: "center" }}>
+      <div style={{ maxWidth: 960, margin: "0 auto 44px", textAlign: "center", position: "relative" }}>
+        {/* Build custom deck button — top-right of header */}
+        <button
+          onClick={() => setShowBuilder(true)}
+          title="Build a custom deck"
+          style={{
+            position: "absolute", top: 0, right: 0,
+            background: "rgba(64,145,108,0.15)",
+            border: "1.5px solid rgba(64,145,108,0.35)",
+            color: "#95d5b2", borderRadius: 12,
+            padding: "9px 16px",
+            fontSize: 13, fontWeight: 700,
+            cursor: "pointer",
+            display: "flex", alignItems: "center", gap: 7,
+            fontFamily: "'Segoe UI', sans-serif",
+            transition: "all 0.15s",
+          }}
+          onMouseEnter={e => {
+            (e.currentTarget as HTMLButtonElement).style.background = "rgba(64,145,108,0.28)";
+            (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(64,145,108,0.6)";
+          }}
+          onMouseLeave={e => {
+            (e.currentTarget as HTMLButtonElement).style.background = "rgba(64,145,108,0.15)";
+            (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(64,145,108,0.35)";
+          }}
+        >
+          <span style={{ fontSize: 17 }}>+</span>
+          New Deck
+        </button>
+
         <div style={{ fontSize: 52, marginBottom: 12 }}>🌳</div>
         <h1 style={{
           fontSize: 40, fontWeight: 800, color: "#d8f3dc",
@@ -97,33 +126,7 @@ export function HomePage({ species, syllabusIds, onSelectDeck }: Props) {
 
       {/* Custom decks */}
       <div style={{ maxWidth: 960, margin: "0 auto 48px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
-          <div style={{ flex: 1, height: 1, background: "rgba(64,145,108,0.3)" }} />
-          <div style={{
-            fontSize: 11, fontWeight: 800, letterSpacing: "2px",
-            textTransform: "uppercase", color: "#40916c",
-          }}>
-            Custom Decks
-          </div>
-          <div style={{ flex: 1, height: 1, background: "rgba(64,145,108,0.3)" }} />
-
-          {/* + button */}
-          <button
-            onClick={() => setShowBuilder(true)}
-            title="Build a custom deck"
-            style={{
-              width: 34, height: 34, borderRadius: 10,
-              background: "rgba(64,145,108,0.18)",
-              border: "1.5px solid rgba(64,145,108,0.4)",
-              color: "#95d5b2", fontSize: 20, cursor: "pointer",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              lineHeight: 1, flexShrink: 0,
-              transition: "all 0.15s",
-            }}
-          >
-            +
-          </button>
-        </div>
+        <SectionLabel>Custom Decks</SectionLabel>
 
         {customDecks.length === 0 ? (
           <button

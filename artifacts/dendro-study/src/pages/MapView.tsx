@@ -63,7 +63,10 @@ export function MapView({ species, onSelectDeck }: Props) {
       zoomControl: true,
       attributionControl: true,
       minZoom: 3,
-      maxZoom: 7,
+      maxZoom: 9,
+      zoomSnap: 0.25,
+      zoomDelta: 0.5,
+      wheelPxPerZoomLevel: 100,
     });
     mapRef.current = map;
 

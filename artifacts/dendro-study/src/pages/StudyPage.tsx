@@ -17,11 +17,9 @@ export function StudyPage({ deck, cards, vis, onVisChange }: Props) {
   const [flipped, setFlipped] = useState(false);
   const [order, setOrder] = useState<number[]>([]);
 
-  // Build shuffled order when cards change
   useEffect(() => {
     if (cards.length === 0) { navigate("/"); return; }
     const arr = Array.from({ length: cards.length }, (_, i) => i);
-    // Fisher-Yates shuffle
     for (let i = arr.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [arr[i], arr[j]] = [arr[j], arr[i]];
@@ -42,12 +40,35 @@ export function StudyPage({ deck, cards, vis, onVisChange }: Props) {
     if (index > 0) { setIndex(i => i - 1); setFlipped(false); }
   }, [index]);
 
-  // Keyboard navigation
+  // Keyboard navigation:
+  // ← / A → previous card
+  // → / D → next card
+  // ↑ / ↓ / W / S / Space → flip card
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
-      if (e.key === "ArrowRight" || e.key === "ArrowDown") goNext();
-      else if (e.key === "ArrowLeft" || e.key === "ArrowUp") goPrev();
-      else if (e.key === " " || e.key === "Enter") setFlipped(f => !f);
+      // Skip if typing in an input
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      switch (e.key) {
+        case "ArrowRight":
+        case "d":
+        case "D":
+          goNext(); break;
+        case "ArrowLeft":
+        case "a":
+        case "A":
+          goPrev(); break;
+        case "ArrowUp":
+        case "ArrowDown":
+        case "w":
+        case "W":
+        case "s":
+        case "S":
+        case " ":
+        case "Enter":
+          e.preventDefault();
+          setFlipped(f => !f);
+          break;
+      }
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -64,60 +85,57 @@ export function StudyPage({ deck, cards, vis, onVisChange }: Props) {
     }}>
       {/* ── Top bar ── */}
       <div style={{
-        display: "flex", alignItems: "center", gap: 12,
-        padding: "16px 24px", flexShrink: 0,
+        display: "flex", alignItems: "center", gap: 14,
+        padding: "14px 20px", flexShrink: 0,
       }}>
-        {/* Back button */}
         <button
           onClick={() => navigate("/")}
           style={{
             background: "rgba(255,255,255,0.08)", border: "1px solid rgba(149,213,178,0.2)",
-            color: "#95d5b2", borderRadius: 10, padding: "8px 14px",
-            fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", gap: 6,
+            color: "#95d5b2", borderRadius: 10, padding: "9px 16px",
+            fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", gap: 6,
+            fontFamily: "'Segoe UI', sans-serif",
           }}
         >
           ← Decks
         </button>
 
-        {/* Deck title */}
         <div style={{ flex: 1 }}>
           <div style={{
-            color: "#74c69d", fontSize: 12, fontWeight: 700,
+            color: "#74c69d", fontSize: 13, fontWeight: 700,
             letterSpacing: "1.5px", textTransform: "uppercase",
           }}>
             {deck?.title ?? "Study"}
           </div>
-          <div style={{
-            color: "rgba(216,243,220,0.5)", fontSize: 11,
-          }}>
+          <div style={{ color: "rgba(216,243,220,0.5)", fontSize: 12 }}>
             Card {index + 1} of {cards.length}
             {flipped ? " · Back" : " · Front"}
           </div>
         </div>
 
-        {/* Settings drawer trigger */}
         <SettingsDrawer vis={vis} onChange={onVisChange} />
       </div>
 
       {/* ── Progress bar ── */}
-      <div style={{ height: 3, flexShrink: 0, background: "rgba(255,255,255,0.08)" }}>
+      <div style={{ height: 4, flexShrink: 0, background: "rgba(255,255,255,0.08)" }}>
         <div style={{
           height: "100%", background: "#40916c",
           width: `${progress}%`, transition: "width 0.3s",
         }} />
       </div>
 
-      {/* ── Card stage ── */}
+      {/* ── Card stage — fills remaining space ── */}
       <div style={{
         flex: 1, display: "flex", alignItems: "center",
-        justifyContent: "center", padding: "20px 28px",
+        justifyContent: "center",
+        padding: "12px 16px 6px",
         minHeight: 0,
       }}>
         <div style={{
           width: "100%",
-          maxWidth: 880,
-          height: "min(520px, calc(100dvh - 180px))",
-          perspective: "1400px",
+          maxWidth: 1000,
+          height: "min(680px, calc(100dvh - 200px))",
+          perspective: "1600px",
           position: "relative",
         }}>
           <FlashCard
@@ -132,24 +150,17 @@ export function StudyPage({ deck, cards, vis, onVisChange }: Props) {
       {/* ── Navigation ── */}
       <div style={{
         display: "flex", alignItems: "center", justifyContent: "center",
-        gap: 16, padding: "16px 24px", flexShrink: 0,
+        gap: 20, padding: "10px 20px 6px", flexShrink: 0,
       }}>
-        <NavBtn
-          disabled={index === 0}
-          onClick={goPrev}
-          label="← Prev"
-        />
+        <NavBtn disabled={index === 0} onClick={goPrev} label="← Prev" />
 
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
-          {/* Always-visible numeric counter */}
           <span style={{
-            color: "#74c69d", fontSize: 14, fontWeight: 700,
+            color: "#74c69d", fontSize: 16, fontWeight: 700,
             fontFamily: "'Segoe UI', sans-serif",
           }}>
             {index + 1} / {cards.length}
           </span>
-
-          {/* Dot indicators for small decks */}
           {cards.length <= 20 && (
             <div style={{ display: "flex", gap: 5 }}>
               {Array.from({ length: cards.length }, (_, i) => (
@@ -168,19 +179,15 @@ export function StudyPage({ deck, cards, vis, onVisChange }: Props) {
           )}
         </div>
 
-        <NavBtn
-          disabled={index === cards.length - 1}
-          onClick={goNext}
-          label="Next →"
-        />
+        <NavBtn disabled={index === cards.length - 1} onClick={goNext} label="Next →" />
       </div>
 
       {/* Keyboard hint */}
       <div style={{
-        textAlign: "center", color: "rgba(116,198,157,0.4)",
-        fontSize: 11, paddingBottom: 16, flexShrink: 0,
+        textAlign: "center", color: "rgba(116,198,157,0.45)",
+        fontSize: 12, paddingBottom: 10, flexShrink: 0,
       }}>
-        ← → keys to navigate · Space to flip
+        ← → / A D to navigate &nbsp;·&nbsp; ↑ ↓ / W S to flip
       </div>
     </div>
   );
@@ -195,9 +202,10 @@ function NavBtn({ disabled, onClick, label }: { disabled: boolean; onClick: () =
         background: disabled ? "rgba(255,255,255,0.04)" : "rgba(64,145,108,0.2)",
         border: `1px solid ${disabled ? "rgba(255,255,255,0.08)" : "rgba(64,145,108,0.4)"}`,
         color: disabled ? "rgba(255,255,255,0.25)" : "#95d5b2",
-        borderRadius: 10, padding: "10px 20px",
-        fontSize: 14, cursor: disabled ? "not-allowed" : "pointer",
+        borderRadius: 12, padding: "12px 28px",
+        fontSize: 15, cursor: disabled ? "not-allowed" : "pointer",
         transition: "all 0.15s",
+        fontFamily: "'Segoe UI', sans-serif",
       }}
     >
       {label}
