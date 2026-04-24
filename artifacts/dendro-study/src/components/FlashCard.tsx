@@ -105,9 +105,12 @@ export function FlashCard({ species, flipped, onFlip, vis }: Props) {
   const findImg = (key: string) =>
     imgUrl(species.images.find((i) => i.alt.toLowerCase().includes(key.toLowerCase()))?.file);
 
-  const leafImg  = findImg("leaf");
-  const barkImg  = findImg("bark");
-  const formImg  = findImg("form");
+  const leafImg   = findImg("leaf");
+  const barkImg   = findImg("bark");
+  const formImg   = findImg("form");
+  const twigImg   = findImg("twig");
+  const flowerImg = findImg("flower");
+  const fruitImg  = findImg("fruit");
 
   // Resolve text sections — parse from description string if sections not pre-populated
   const sec = species.sections ?? parseDescriptionSections(species.description ?? "");
@@ -211,15 +214,20 @@ export function FlashCard({ species, flipped, onFlip, vis }: Props) {
         display: "flex", flexDirection: "column", overflow: "hidden",
       }}>
 
-        {/* ── Photo zone: top 57% ── */}
+        {/* ── Photo zone: top 57% — 6 images: leaf big left, 5 others in 2×3 right grid ── */}
         <div style={{
           flex: "0 0 57%",
-          display: "grid", gridTemplateColumns: "1fr 1fr", gridTemplateRows: "1fr 1fr",
+          display: "grid",
+          gridTemplateColumns: "2fr 1fr 1fr",
+          gridTemplateRows: "1fr 1fr 1fr",
           gap: 2, position: "relative", background: "#0a0a0a", overflow: "hidden",
         }}>
-          <PhotoCell url={leafImg}  label="Leaf" show={V.back.leafImage} style={{ gridRow: "1 / 3" }} />
-          <PhotoCell url={barkImg}  label="Bark" show={V.back.barkImage} />
-          <PhotoCell url={formImg}  label="Form" show={V.back.formImage} />
+          <PhotoCell url={leafImg}   label="Leaf"   show={V.back.leafImage}   style={{ gridRow: "1 / 4" }} />
+          <PhotoCell url={barkImg}   label="Bark"   show={V.back.barkImage} />
+          <PhotoCell url={formImg}   label="Form"   show={V.back.formImage} />
+          <PhotoCell url={twigImg}   label="Twig"   show={V.back.twigImage} />
+          <PhotoCell url={flowerImg} label="Flower" show={V.back.flowerImage} />
+          <PhotoCell url={fruitImg}  label="Fruit"  show={V.back.fruitImage}  style={{ gridColumn: "2 / 4" }} />
 
           {/* Range map — top left overlay — always rendered, hidden when unchecked */}
           <div style={{

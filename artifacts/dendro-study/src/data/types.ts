@@ -45,6 +45,9 @@ export interface VisibilitySettings {
     leafImage: boolean;
     barkImage: boolean;
     formImage: boolean;
+    twigImage: boolean;
+    flowerImage: boolean;
+    fruitImage: boolean;
     rangeMap: boolean;
     backTags: boolean;
     metadata: boolean;
@@ -62,6 +65,7 @@ export const DEFAULT_VISIBILITY: VisibilitySettings = {
   front: { family: true, commonName: true, scientificName: true, tags: true },
   back: {
     leafImage: true, barkImage: true, formImage: true,
+    twigImage: true, flowerImage: true, fruitImage: true,
     rangeMap: true, backTags: true, metadata: true,
     leafText: true, barkText: true, formText: true,
     looksLike: true, twigText: true, flowerText: true, fruitText: true,

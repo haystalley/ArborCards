@@ -19,10 +19,13 @@ const FRONT_ITEMS: CheckboxItem[] = [
 ];
 
 const BACK_ITEMS: CheckboxItem[] = [
-  { key: "leafImage",  label: "Leaf image" },
-  { key: "barkImage",  label: "Bark image" },
-  { key: "formImage",  label: "Form image" },
-  { key: "rangeMap",   label: "Range map" },
+  { key: "leafImage",   label: "Leaf image" },
+  { key: "barkImage",   label: "Bark image" },
+  { key: "formImage",   label: "Form image" },
+  { key: "twigImage",   label: "Twig image" },
+  { key: "flowerImage", label: "Flower image" },
+  { key: "fruitImage",  label: "Fruit image" },
+  { key: "rangeMap",    label: "Range map" },
   { key: "backTags",   label: "Tag pills" },
   { key: "metadata",   label: "Metadata strip" },
   { key: "leafText",   label: "Leaf text" },

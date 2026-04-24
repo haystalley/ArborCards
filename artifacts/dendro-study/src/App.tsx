@@ -12,7 +12,15 @@ const LS_VIS = "dendro-vis-v1";
 function loadVis(): VisibilitySettings {
   try {
     const raw = localStorage.getItem(LS_VIS);
-    if (raw) return { ...DEFAULT_VISIBILITY, ...JSON.parse(raw) };
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      return {
+        ...DEFAULT_VISIBILITY,
+        ...parsed,
+        front: { ...DEFAULT_VISIBILITY.front, ...(parsed.front ?? {}) },
+        back:  { ...DEFAULT_VISIBILITY.back,  ...(parsed.back  ?? {}) },
+      };
+    }
   } catch {}
   return DEFAULT_VISIBILITY;
 }
