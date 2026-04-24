@@ -1,5 +1,6 @@
 import type { SpeciesData, VisibilitySettings } from "@/data/types";
 import { imgUrl } from "@/config";
+import { parseDescriptionSections } from "@/utils/parseDescription";
 
 // ── Tag colour map ────────────────────────────────────────────────────────────
 function tagStyle(tag: string): { bg: string; text: string; border: string } {
@@ -108,8 +109,8 @@ export function FlashCard({ species, flipped, onFlip, vis }: Props) {
   const barkImg  = findImg("bark");
   const formImg  = findImg("form");
 
-  // Resolve text sections (fall back to general description for leaf)
-  const sec = species.sections ?? {};
+  // Resolve text sections — parse from description string if sections not pre-populated
+  const sec = species.sections ?? parseDescriptionSections(species.description ?? "");
   const leafText  = sec.leaf  ?? species.description ?? "";
   const barkText  = sec.bark  ?? "";
   const formText  = sec.form  ?? "";
